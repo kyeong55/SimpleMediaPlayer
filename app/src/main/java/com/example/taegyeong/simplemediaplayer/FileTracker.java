@@ -12,30 +12,25 @@ import java.util.List;
  */
 class FileInfo{
 
-    private String name;
-    private String path;
+    private File file;
     private FileInfo parent;
 
-    private boolean isDirectory;
     private int subFileNum;
     private List<FileInfo> subFileInfo;
 
     public FileInfo(FileInfo parent, File file){
+        this.file = file;
         this.parent = parent;
-        this.name = file.getName();
-        this.path = file.getPath();
-        this.isDirectory = file.isDirectory();
     }
-    public String getName() {return name;}
-    public String getPath() {return path;}
+    public String getName() {return file.getName();}
+    public String getPath() {return file.getPath();}
     public FileInfo getParent() {return parent;}
-    public boolean isDirectory() {return isDirectory;}
+    public boolean isDirectory() {return file.isDirectory();}
     public int getSubFileNum() {return subFileNum;}
     public List<FileInfo> getSubFileInfo() {return subFileInfo;}
 
     public void scan(final List<String> filter){
-        if(isDirectory){
-            File file = new File(path);
+        if(isDirectory()){
             if(file == null)
                 return;
             if(!file.canRead())
@@ -54,7 +49,7 @@ class FileInfo{
                 @Override
                 public boolean accept(File dir, String filename) {
                     for(int i = 0; i < filter.size(); i++){
-                        if(filename.toLowerCase().endsWith(filter.get(i)))
+                        if(filename.endsWith("."+filter.get(i)))
                             return true;
                     }
                     return false;
@@ -91,11 +86,11 @@ public class FileTracker {
     }
     public void init(){
         filter = new ArrayList<>();
-        filter.add("jpg");
-        filter.add("png");
+//        filter.add("jpg");
+//        filter.add("png");
         filter.add("mp3");
-        filter.add("wmv");
-        filter.add("avi");
+//        filter.add("wmv");
+//        filter.add("avi");
         rootDir.scan(filter);
         currentDir = rootDir;
     }

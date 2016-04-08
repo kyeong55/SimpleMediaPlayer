@@ -8,6 +8,11 @@
     tools:context=".FileListActivity"
     tools:showIn="@layout/activity_filelist"
     android:orientation="vertical">
+    <ProgressBar
+        android:id="@+id/progressbar"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_margin="120dp"/>
     <TextView
         android:id="@+id/location"
         android:layout_width="match_parent"

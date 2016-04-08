@@ -1,22 +1,22 @@
 package com.example.taegyeong.simplemediaplayer;
 
+import android.content.Context;
+import android.os.AsyncTask;
 import android.os.Bundle;
-import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.View;
+import android.widget.ProgressBar;
 import android.widget.TextView;
-
-import java.io.File;
-import java.util.ArrayList;
-import java.util.List;
 
 public class FileListActivity extends AppCompatActivity {
 
     private FileListAdapter fileListAdapter;
+    private TextView location;
+    private ProgressBar progressBar;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -34,12 +34,28 @@ public class FileListActivity extends AppCompatActivity {
 //            }
 //        });
 
-        TextView location = (TextView) findViewById(R.id.location);
+        location = (TextView) findViewById(R.id.location);
+        progressBar = (ProgressBar) findViewById(R.id.progressbar);
 
+//        LinearLayoutManager layoutManager = new LinearLayoutManager(getApplicationContext());
+//        layoutManager.setOrientation(LinearLayoutManager.VERTICAL);
+//
+//        fileListAdapter = new FileListAdapter(getApplicationContext(),location);
+//
+//        RecyclerView fileListView = (RecyclerView) findViewById(R.id.filelist);
+//        fileListView.setHasFixedSize(true);
+//        fileListView.setLayoutManager(layoutManager);
+//        fileListView.setAdapter(fileListAdapter);
+        ScanTask task = new ScanTask();
+        task.execute(getApplicationContext());
+    }
+
+    public void setList(){
+        progressBar.setVisibility(View.GONE);
         LinearLayoutManager layoutManager = new LinearLayoutManager(getApplicationContext());
         layoutManager.setOrientation(LinearLayoutManager.VERTICAL);
 
-        fileListAdapter = new FileListAdapter(getApplicationContext(),location);
+//        fileListAdapter = new FileListAdapter(getApplicationContext(),location);
 
         RecyclerView fileListView = (RecyclerView) findViewById(R.id.filelist);
         fileListView.setHasFixedSize(true);
@@ -52,5 +68,21 @@ public class FileListActivity extends AppCompatActivity {
     public void onBackPressed(){
         if (!fileListAdapter.returnBack())
             super.onBackPressed();
+    }
+
+    public class ScanTask extends AsyncTask<Context, Void, Void> {
+        @Override
+        public Void doInBackground(Context... params) {
+            fileListAdapter = new FileListAdapter(params[0],location);
+            return null;
+        }
+
+        @Override
+        public void onPostExecute(Void result) {
+//            super.onPostExecute(result);
+            Log.d("debugging", "execute finished");
+            setList();
+//            location.setText("asd");
+        }
     }
 }

@@ -5,6 +5,7 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -24,7 +25,6 @@ public class FileListAdapter extends  RecyclerView.Adapter<FileListAdapter.ViewH
         fileTracker = new FileTracker();
         this.context = context;
         this.location = location;
-        this.location.setText(fileTracker.getDirName());
     }
 
     @Override
@@ -35,6 +35,7 @@ public class FileListAdapter extends  RecyclerView.Adapter<FileListAdapter.ViewH
 
     @Override
     public void onBindViewHolder(FileListAdapter.ViewHolder holder, final int position) {
+        location.setText(fileTracker.getDirName());
         holder.name.setText(fileTracker.getFileName(position));
         holder.layout.setOnClickListener(new View.OnClickListener() {
             @Override
