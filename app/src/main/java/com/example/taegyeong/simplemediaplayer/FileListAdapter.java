@@ -1,36 +1,30 @@
 package com.example.taegyeong.simplemediaplayer;
 
+import android.content.Context;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
-
-import java.io.File;
-import java.util.ArrayList;
-import java.util.List;
+import android.widget.Toast;
 
 /**
  * Created by taegyeong on 16. 4. 8..
  */
-class FileInfo{
-    public String name;
-    public String path;
-    public FileInfo(String name, String path){
-        this.name = name;
-        this.path = path;
-    }
-}
+
 public class FileListAdapter extends  RecyclerView.Adapter<FileListAdapter.ViewHolder> {
 
-    private final String root = "/";
+    private final String root = "/storage";
 
-    private List<FileInfo> items;
+    private Context context;
     private TextView location;
+    private FileTracker fileTracker;
 
-    public FileListAdapter(TextView location){
+    public FileListAdapter(Context context, TextView location){
+        fileTracker = new FileTracker();
+        this.context = context;
         this.location = location;
-        getDir(root);
+        this.location.setText(fileTracker.getDirName());
     }
 
     @Override
@@ -40,42 +34,32 @@ public class FileListAdapter extends  RecyclerView.Adapter<FileListAdapter.ViewH
     }
 
     @Override
-    public void onBindViewHolder(FileListAdapter.ViewHolder holder, int position) {
-        final FileInfo item = items.get(position);
-        holder.name.setText(item.name);
+    public void onBindViewHolder(FileListAdapter.ViewHolder holder, final int position) {
+        holder.name.setText(fileTracker.getFileName(position));
         holder.layout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                File file = new File(item.path);
-                if(file.isDirectory())
-                    getDir(item.path);
+                if(fileTracker.openDir(position)){
+                    location.setText(fileTracker.getDirName());
+                    notifyDataSetChanged();
+                }
+                else
+                    Toast.makeText(context, "여는파일이 아님", Toast.LENGTH_SHORT).show();
             }
         });
     }
 
     @Override
     public int getItemCount() {
-        return items.size();
+        return fileTracker.getFileNum();
     }
 
-    private void getDir(String dirPath) {
-        items = new ArrayList<>();
-        location.setText("Location: " + dirPath);
-        File f = new File(dirPath);
-        File[] files = f.listFiles();
-        if (!dirPath.equals(root)) {
-            items.add(new FileInfo(root,root));
-            items.add(new FileInfo("../",f.getParent()));
+    public boolean returnBack(){
+        if(fileTracker.returnBack()) {
+            notifyDataSetChanged();
+            return true;
         }
-
-        for (File file : files) {
-            if (file.isDirectory())
-                items.add(new FileInfo(file.getName() + "/",file.getPath()));
-            else
-                items.add(new FileInfo(file.getName(),file.getPath()));
-        }
-
-        this.notifyDataSetChanged();
+        return false;
     }
 
     public class ViewHolder extends RecyclerView.ViewHolder {
