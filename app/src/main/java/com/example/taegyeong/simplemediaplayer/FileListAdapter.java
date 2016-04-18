@@ -1,6 +1,7 @@
 package com.example.taegyeong.simplemediaplayer;
 
 import android.content.Context;
+import android.content.Intent;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -44,8 +45,13 @@ public class FileListAdapter extends  RecyclerView.Adapter<FileListAdapter.ViewH
                     location.setText(fileTracker.getDirName());
                     notifyDataSetChanged();
                 }
-                else
-                    Toast.makeText(context, "여는파일이 아님", Toast.LENGTH_SHORT).show();
+                else{
+                    Intent musicPlayIntent = new Intent(context, MusicPlayActivity.class);
+                    musicPlayIntent.putExtra("filePath", fileTracker.getFilePath(position));
+                    musicPlayIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                    context.startActivity(musicPlayIntent);
+                }
+//                    Toast.makeText(context, "여는파일이 아님", Toast.LENGTH_SHORT).show();
             }
         });
     }
