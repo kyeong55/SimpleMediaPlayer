@@ -8,19 +8,21 @@ import android.content.ServiceConnection;
 import android.database.Cursor;
 import android.media.MediaPlayer;
 import android.net.Uri;
-import android.os.AsyncTask;
 import android.os.IBinder;
 import android.provider.MediaStore;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentPagerAdapter;
+import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.View;
-import android.widget.Button;
+import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.SeekBar;
 import android.widget.TextView;
-
-import org.w3c.dom.Text;
 
 import java.util.ArrayList;
 
@@ -31,32 +33,44 @@ public class MusicPlayActivity extends AppCompatActivity {
     private boolean isPlaying;
 
     private SeekBar seekBar;
-    private ImageView albumArt;
-    private TextView title;
-    private TextView artist;
+
+    private SectionsPagerAdapter mSectionsPagerAdapter;
+    private ViewPager mViewPager;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_music_play);
 
+        mSectionsPagerAdapter = new SectionsPagerAdapter(getSupportFragmentManager(), getIntent().getStringArrayListExtra("fileList"));
+        mViewPager = (ViewPager) findViewById(R.id.music_pager);
+        mViewPager.setAdapter(mSectionsPagerAdapter);
+        mViewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
+            @Override
+            public void onPageSelected(int position) {
+                musicPlayService.skipTo(position);
+            }
+
+            @Override
+            public void onPageScrolled(int position, float positionOffest, int positionOffsetPixels) {
+            }
+
+            @Override
+            public void onPageScrollStateChanged(int state) {
+            }
+        });
+
         final ImageView playButton = (ImageView) findViewById(R.id.music_play);
         final ImageView pauseButton = (ImageView) findViewById(R.id.music_pause);
         ImageView nextButton = (ImageView) findViewById(R.id.music_next);
         ImageView previousButton = (ImageView) findViewById(R.id.music_previous);
         seekBar = (SeekBar) findViewById(R.id.music_seekbar);
-        albumArt = (ImageView) findViewById(R.id.music_image);
-        title = (TextView) findViewById(R.id.music_title);
-        artist = (TextView) findViewById(R.id.music_artist);
 
         assert playButton != null;
         assert pauseButton != null;
         assert nextButton != null;
         assert previousButton != null;
         assert seekBar != null;
-        assert albumArt != null;
-        assert title != null;
-        assert artist != null;
 
         playButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -80,14 +94,14 @@ public class MusicPlayActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 musicPlayService.skipPrevious();
-                setUp(musicPlayService.getFilePath());
+                setUp(musicPlayService.getPosition());
             }
         });
         nextButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 musicPlayService.skipNext();
-                setUp(musicPlayService.getFilePath());
+                setUp(musicPlayService.getPosition());
             }
         });
     }
@@ -145,12 +159,12 @@ public class MusicPlayActivity extends AppCompatActivity {
                 @Override
                 public void onCompletion(MediaPlayer mp) {
                     musicPlayService.skipNext();
-                    setUp(musicPlayService.getFilePath());
+                    setUp(musicPlayService.getPosition());
                 }
             });
             Thread seekBarThread = new SeekBarThread();
             seekBarThread.start();
-            setUp(musicPlayService.getFilePath());
+            setUp(musicPlayService.getPosition());
         }
 
         @Override
@@ -178,20 +192,93 @@ public class MusicPlayActivity extends AppCompatActivity {
         }
     }
 
-    public void setUp(String path){
-        Uri fileUri = Uri.parse(path);
-        String filePath = fileUri.getPath();
-        Cursor c = getContentResolver().query(MediaStore.Audio.Media.EXTERNAL_CONTENT_URI,null,"_data ='" + filePath + "'",null,null);
-        c.moveToNext();
-        if(c.getCount()>0) {
-            int id = c.getInt(0);
-            Uri uri = ContentUris.withAppendedId(MediaStore.Audio.Media.EXTERNAL_CONTENT_URI,id);
-            Cursor cur = managedQuery(uri, null, null, null, null);
-            if(cur.moveToFirst()) {
-                title.setText(cur.getString(cur.getColumnIndex(MediaStore.Audio.AudioColumns.TITLE)));
-                artist.setText(cur.getString(cur.getColumnIndex(MediaStore.Audio.AlbumColumns.ARTIST)));
-            }
+    public void setUp(int pos){
+//        Uri fileUri = Uri.parse(path);
+//        String filePath = fileUri.getPath();
+//        Cursor c = getContentResolver().query(MediaStore.Audio.Media.EXTERNAL_CONTENT_URI,null,"_data ='" + filePath + "'",null,null);
+//        c.moveToNext();
+//        if(c.getCount()>0) {
+//            int id = c.getInt(0);
+//            Uri uri = ContentUris.withAppendedId(MediaStore.Audio.Media.EXTERNAL_CONTENT_URI,id);
+//            Cursor cur = managedQuery(uri, null, null, null, null);
+//            if(cur.moveToFirst()) {
+//                title.setText(cur.getString(cur.getColumnIndex(MediaStore.Audio.AudioColumns.TITLE)));
+//                artist.setText(cur.getString(cur.getColumnIndex(MediaStore.Audio.AlbumColumns.ARTIST)));
+//            }
+//        }
+//        c.close();
+        mViewPager.setCurrentItem(pos);
+    }
+
+    public class SectionsPagerAdapter extends FragmentPagerAdapter {
+
+        ArrayList<String> fileList;
+
+        public SectionsPagerAdapter(FragmentManager fm, ArrayList<String> fileList) {
+            super(fm);
+            this.fileList = fileList;
         }
-        c.close();
+
+        @Override
+        public Fragment getItem(int position) {
+            // getItem is called to instantiate the fragment for the given page.
+            // Return a MusicInfoFragment (defined as a static inner class below).
+//            return MusicInfoFragment.newInstance(fileList.get(position));
+            return new MusicInfoFragment(fileList.get(position));
+        }
+
+        @Override
+        public int getCount() {
+            // Show 3 total pages.
+            return fileList.size();
+        }
+    }
+
+    public class MusicInfoFragment extends Fragment {
+
+        private String filePath;
+
+        public MusicInfoFragment(String filePath) {
+            this.filePath = filePath;
+        }
+
+//        /**
+//         * Returns a new instance of this fragment for the given section
+//         * number.
+//         */
+//        public static MusicInfoFragment newInstance(String filePath) {
+//            MusicInfoFragment fragment = new MusicInfoFragment();
+//            Bundle args = new Bundle();
+//            args.putString(ARG_FILE_PATH, filePath);
+//            fragment.setArguments(args);
+//            return fragment;
+//        }
+
+        @Override
+        public View onCreateView(LayoutInflater inflater, ViewGroup container,
+                                 Bundle savedInstanceState) {
+            View rootView = inflater.inflate(R.layout.fragment_music_play, container, false);
+            ImageView albumArt = (ImageView) rootView.findViewById(R.id.music_image);
+            TextView title = (TextView) rootView.findViewById(R.id.music_title);
+            TextView artist = (TextView) rootView.findViewById(R.id.music_artist);
+
+            title.setSelected(true);
+
+            Uri fileUri = Uri.parse(filePath);
+            String filePath = fileUri.getPath();
+            Cursor c = container.getContext().getContentResolver().query(MediaStore.Audio.Media.EXTERNAL_CONTENT_URI,null,"_data ='" + filePath + "'",null,null);
+            c.moveToNext();
+            if(c.getCount()>0) {
+                int id = c.getInt(0);
+                Uri uri = ContentUris.withAppendedId(MediaStore.Audio.Media.EXTERNAL_CONTENT_URI,id);
+                Cursor cur = managedQuery(uri, null, null, null, null);
+                if(cur.moveToFirst()) {
+                    title.setText(cur.getString(cur.getColumnIndex(MediaStore.Audio.AudioColumns.TITLE)));
+                    artist.setText(cur.getString(cur.getColumnIndex(MediaStore.Audio.AlbumColumns.ARTIST)));
+                }
+            }
+            c.close();
+            return rootView;
+        }
     }
 }

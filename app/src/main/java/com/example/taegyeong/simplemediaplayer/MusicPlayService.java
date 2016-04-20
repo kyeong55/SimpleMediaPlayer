@@ -111,6 +111,12 @@ public class MusicPlayService extends Service {
             position--;
         musicLoad(fileList.get(position));
     }
+    public void skipTo(int pos){
+        if (pos != position){
+            position = pos;
+            musicLoad(fileList.get(position));
+        }
+    }
     public boolean isChanged(){
         return fileChanged;
     }
@@ -141,5 +147,9 @@ public class MusicPlayService extends Service {
                 skipNext();
             }
         });
+    }
+
+    public int getPosition(){
+        return position;
     }
 }
