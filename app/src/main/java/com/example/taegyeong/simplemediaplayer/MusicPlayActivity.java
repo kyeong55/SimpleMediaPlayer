@@ -105,15 +105,17 @@ public class MusicPlayActivity extends AppCompatActivity {
         previousButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                musicPlayService.skipPrevious();
-                setUp(musicPlayService.getPosition());
+//                musicPlayService.skipPrevious();
+//                setUp(musicPlayService.getPosition());
+                setUp(musicPlayService.prevPosition());
             }
         });
         nextButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                musicPlayService.skipNext();
-                setUp(musicPlayService.getPosition());
+//                musicPlayService.skipNext();
+//                setUp(musicPlayService.getPosition());
+                setUp(musicPlayService.nextPosition());
             }
         });
     }
@@ -170,8 +172,12 @@ public class MusicPlayActivity extends AppCompatActivity {
             musicPlayService.mediaPlayer.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
                 @Override
                 public void onCompletion(MediaPlayer mp) {
-                    musicPlayService.skipNext();
-                    setUp(musicPlayService.getPosition());
+//                    musicPlayService.skipNext();
+//                    setUp(musicPlayService.getPosition());
+                    if(!musicPlayService.skipping){
+                        Log.d("debugging", "onCompletion");
+                        setUp(musicPlayService.nextPosition());
+                    }
                 }
             });
             loaded = true;
@@ -221,6 +227,7 @@ public class MusicPlayActivity extends AppCompatActivity {
 //            }
 //        }
 //        c.close();
+        Log.d("debugging", "setUP");
         mViewPager.setCurrentItem(pos);
     }
 

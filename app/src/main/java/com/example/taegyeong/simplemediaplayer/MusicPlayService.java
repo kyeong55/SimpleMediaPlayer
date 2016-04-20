@@ -20,6 +20,7 @@ public class MusicPlayService extends Service {
     private ArrayList<String> fileList;
     private int position;
     private boolean fileChanged = false;
+    public boolean skipping = false;
 
     public class MusicPlayBinder extends Binder {
         MusicPlayService getService() {
@@ -57,6 +58,7 @@ public class MusicPlayService extends Service {
                 @Override
                 public void onPrepared(MediaPlayer mp) {
                     mediaPlayer.start();
+                    skipping = false;
                 }
             });
             fileChanged = true;
@@ -97,27 +99,44 @@ public class MusicPlayService extends Service {
             return true;
         }
     }
-    public void skipNext(){
+    public int nextPosition(){
         if (position < fileList.size() - 1)
-            position++;
+            return position+1;
         else
-            position = 0;
-        musicLoad(fileList.get(position));
+            return 0;
     }
-    public void skipPrevious(){
+    public int prevPosition(){
         if (position == 0)
-            position = fileList.size() - 1;
+            return fileList.size() - 1;
         else
-            position--;
-        musicLoad(fileList.get(position));
+            return position-1;
     }
+//    public void skipNext(){
+//        Log.d("debugging", "position before: "+position);
+//        if (position < fileList.size() - 1)
+//            position++;
+//        else
+//            position = 0;
+//        musicLoad(fileList.get(position));
+//        Log.d("debugging", "position after: "+position);
+//    }
+//    public void skipPrevious(){
+//        Log.d("debugging", "position before: "+position);
+//        if (position == 0)
+//            position = fileList.size() - 1;
+//        else
+//            position--;
+//        musicLoad(fileList.get(position));
+//        Log.d("debugging", "position after: "+position);
+//    }
     public void skipTo(int pos){
-        Log.d("debugging", "skipTo: "+pos);
-        Log.d("debugging", "originalPos: "+position);
+        Log.d("debugging", "position before: "+position);
+        skipping = true;
         if (pos != position){
             position = pos;
             musicLoad(fileList.get(position));
         }
+        Log.d("debugging", "position after: "+position);
     }
     public boolean isChanged(){
         return fileChanged;
@@ -146,7 +165,8 @@ public class MusicPlayService extends Service {
         mediaPlayer.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
             @Override
             public void onCompletion(MediaPlayer mp) {
-                skipNext();
+                Log.d("debugging", "inde-onCompletion");
+                skipTo(nextPosition());
             }
         });
     }
