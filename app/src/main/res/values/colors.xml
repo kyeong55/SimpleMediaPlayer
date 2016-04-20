@@ -9,4 +9,11 @@
     <color name="colorTheme3">#FDA286</color>
     <color name="colorTheme4">#FB607A</color>
     <color name="colorTheme5">#FC297D</color>
+
+    <color name="colorGray">#424242</color>
+    <color name="colorGray1">#514E64</color>
+    <color name="colorGray2">#424242</color>
+    <color name="colorWhite">#FFFFFF</color>
+    <color name="colorLightGray">#616161</color>
+    <color name="colorShadow">#61000000</color>
 </resources>

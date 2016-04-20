@@ -24,7 +24,8 @@
             android:name=".FileListActivity"
             android:label="@string/title_activity_filelist"
             android:theme="@style/AppTheme.NoActionBar" />
-        <activity android:name=".MusicPlayActivity" />
+        <activity android:name=".MusicPlayActivity"
+            android:theme="@style/AppTheme.Player" />
 
         <service
             android:name=".MusicPlayService"

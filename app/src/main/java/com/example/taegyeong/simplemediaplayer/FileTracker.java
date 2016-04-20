@@ -98,6 +98,14 @@ public class FileTracker {
     public int getFileNum() {return currentDir.getSubFileInfo().size();}
     public String getFileName(int position) {return currentDir.getSubFileInfo().get(position).getName();}
     public String getFilePath(int position) {return currentDir.getSubFileInfo().get(position).getPath();}
+    public ArrayList<String> getFileList() {
+        ArrayList<String> fileList = new ArrayList<>();
+        List<FileInfo> subFileInfo = currentDir.getSubFileInfo();
+        for (int i=0;i<currentDir.getSubFileInfo().size();i++){
+            fileList.add(currentDir.getSubFileInfo().get(i).getPath());
+        }
+        return fileList;
+    }
     public boolean openDir(int position) {
         if(currentDir.getSubFileInfo().get(position).isDirectory()) {
             if (position < currentDir.getSubFileInfo().size()) {

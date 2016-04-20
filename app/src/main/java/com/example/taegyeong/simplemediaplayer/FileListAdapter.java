@@ -47,7 +47,9 @@ public class FileListAdapter extends  RecyclerView.Adapter<FileListAdapter.ViewH
                 }
                 else{
                     Intent musicPlayIntent = new Intent(context, MusicPlayActivity.class);
-                    musicPlayIntent.putExtra("filePath", fileTracker.getFilePath(position));
+//                    musicPlayIntent.putExtra("filePath", fileTracker.getFilePath(position));
+                    musicPlayIntent.putExtra("position", position);
+                    musicPlayIntent.putExtra("fileList", fileTracker.getFileList());
                     musicPlayIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                     context.startActivity(musicPlayIntent);
                 }
