@@ -75,7 +75,7 @@ class FileInfo{
     }
 }
 public class FileTracker {
-    private final String root = "/storage/";
+    private final String root = "/storage/external_SD/";
     private List<String> filter;
     private FileInfo rootDir;
     private FileInfo currentDir;
