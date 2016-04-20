@@ -20,7 +20,7 @@
     <style name="AppTheme.Player">
         <item name="windowActionBar">false</item>
         <item name="windowNoTitle">true</item>
-        <item name="colorPrimaryDark">@color/colorGray1</item>
+        <item name="colorPrimaryDark">@color/colorGray</item>
     </style>
 
 </resources>

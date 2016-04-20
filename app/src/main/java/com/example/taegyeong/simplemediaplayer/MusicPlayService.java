@@ -112,6 +112,8 @@ public class MusicPlayService extends Service {
         musicLoad(fileList.get(position));
     }
     public void skipTo(int pos){
+        Log.d("debugging", "skipTo: "+pos);
+        Log.d("debugging", "originalPos: "+position);
         if (pos != position){
             position = pos;
             musicLoad(fileList.get(position));

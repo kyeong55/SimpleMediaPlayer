@@ -1,14 +1,18 @@
 package com.example.taegyeong.simplemediaplayer;
 
 import android.content.ComponentName;
+import android.content.ContentResolver;
 import android.content.ContentUris;
 import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
 import android.database.Cursor;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.IBinder;
+import android.os.ParcelFileDescriptor;
 import android.provider.MediaStore;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
@@ -24,6 +28,9 @@ import android.widget.ImageView;
 import android.widget.SeekBar;
 import android.widget.TextView;
 
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayList;
 
 public class MusicPlayActivity extends AppCompatActivity {
@@ -37,6 +44,8 @@ public class MusicPlayActivity extends AppCompatActivity {
     private SectionsPagerAdapter mSectionsPagerAdapter;
     private ViewPager mViewPager;
 
+    private boolean loaded = false;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -48,7 +57,9 @@ public class MusicPlayActivity extends AppCompatActivity {
         mViewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
             @Override
             public void onPageSelected(int position) {
-                musicPlayService.skipTo(position);
+                if(loaded)
+                    musicPlayService.skipTo(position);
+//                ((MusicInfoFragment)mSectionsPagerAdapter.getItem(position)).title.setSelected(true);
             }
 
             @Override
@@ -59,6 +70,7 @@ public class MusicPlayActivity extends AppCompatActivity {
             public void onPageScrollStateChanged(int state) {
             }
         });
+        mViewPager.setCurrentItem(getIntent().getIntExtra("position", -1));
 
         final ImageView playButton = (ImageView) findViewById(R.id.music_play);
         final ImageView pauseButton = (ImageView) findViewById(R.id.music_pause);
@@ -162,6 +174,7 @@ public class MusicPlayActivity extends AppCompatActivity {
                     setUp(musicPlayService.getPosition());
                 }
             });
+            loaded = true;
             Thread seekBarThread = new SeekBarThread();
             seekBarThread.start();
             setUp(musicPlayService.getPosition());
@@ -169,6 +182,7 @@ public class MusicPlayActivity extends AppCompatActivity {
 
         @Override
         public void onServiceDisconnected(ComponentName arg0) {
+            loaded = false;
         }
     };
 
@@ -237,6 +251,9 @@ public class MusicPlayActivity extends AppCompatActivity {
     public class MusicInfoFragment extends Fragment {
 
         private String filePath;
+        ImageView albumArt;
+        TextView title;
+        TextView artist;
 
         public MusicInfoFragment(String filePath) {
             this.filePath = filePath;
@@ -258,9 +275,9 @@ public class MusicPlayActivity extends AppCompatActivity {
         public View onCreateView(LayoutInflater inflater, ViewGroup container,
                                  Bundle savedInstanceState) {
             View rootView = inflater.inflate(R.layout.fragment_music_play, container, false);
-            ImageView albumArt = (ImageView) rootView.findViewById(R.id.music_image);
-            TextView title = (TextView) rootView.findViewById(R.id.music_title);
-            TextView artist = (TextView) rootView.findViewById(R.id.music_artist);
+            albumArt = (ImageView) rootView.findViewById(R.id.music_image);
+            title = (TextView) rootView.findViewById(R.id.music_title);
+            artist = (TextView) rootView.findViewById(R.id.music_artist);
 
             title.setSelected(true);
 
@@ -275,10 +292,88 @@ public class MusicPlayActivity extends AppCompatActivity {
                 if(cur.moveToFirst()) {
                     title.setText(cur.getString(cur.getColumnIndex(MediaStore.Audio.AudioColumns.TITLE)));
                     artist.setText(cur.getString(cur.getColumnIndex(MediaStore.Audio.AlbumColumns.ARTIST)));
+                    int albumID = Integer.parseInt(cur.getString(cur.getColumnIndex(MediaStore.Audio.Media.ALBUM_ID)));
+//                    albumArt.setImageBitmap(getArtworkQuick(container.getContext(),albumID, 50, 50));
+                    albumArt.setImageBitmap(getAlbumArt(container.getContext(),albumID));
                 }
             }
             c.close();
             return rootView;
+        }
+
+
+        public Bitmap getAlbumArt(Context mContext, long albumId)
+        {
+            Uri artworkUri = Uri.parse("content://media/external/audio/albumart");
+            Uri uri = ContentUris.withAppendedId(artworkUri, albumId);
+            ContentResolver cr = mContext.getContentResolver();
+            InputStream in = null;
+            try {
+                in = cr.openInputStream(uri);
+
+            } catch (FileNotFoundException e) {
+                e.printStackTrace();
+            }
+            Bitmap artwork = BitmapFactory.decodeStream(in);
+            return artwork;
+        }
+
+        private Bitmap getArtworkQuick(Context context, int album_id, int w, int h) {
+            // NOTE: There is in fact a 1 pixel frame in the ImageView used to
+            // display this drawable. Take it into account now, so we don't have to
+            // scale later.
+            w -= 2;
+            h -= 2;
+            Uri artworkUri = Uri.parse("content://media/external/audio/albumart");
+            BitmapFactory.Options sBitmapOptionsCache = new BitmapFactory.Options();
+            ContentResolver res = context.getContentResolver();
+            Uri uri = ContentUris.withAppendedId(artworkUri, album_id);
+            if (uri != null) {
+                Log.d("debugging", "uri exist");
+                ParcelFileDescriptor fd = null;
+                try {
+                    fd = res.openFileDescriptor(uri, "r");
+                    int sampleSize = 1;
+
+                    // Compute the closest power-of-two scale factor
+                    // and pass that to sBitmapOptionsCache.inSampleSize, which will
+                    // result in faster decoding and better quality
+                    sBitmapOptionsCache.inJustDecodeBounds = true;
+                    BitmapFactory.decodeFileDescriptor(
+                            fd.getFileDescriptor(), null, sBitmapOptionsCache);
+                    int nextWidth = sBitmapOptionsCache.outWidth >> 1;
+                    int nextHeight = sBitmapOptionsCache.outHeight >> 1;
+                    while (nextWidth>w && nextHeight>h) {
+                        sampleSize <<= 1;
+                        nextWidth >>= 1;
+                        nextHeight >>= 1;
+                    }
+
+                    sBitmapOptionsCache.inSampleSize = sampleSize;
+                    sBitmapOptionsCache.inJustDecodeBounds = false;
+                    Bitmap b = BitmapFactory.decodeFileDescriptor(
+                            fd.getFileDescriptor(), null, sBitmapOptionsCache);
+
+                    if (b != null) {
+                        // finally rescale to exactly the size we need
+                        if (sBitmapOptionsCache.outWidth != w || sBitmapOptionsCache.outHeight != h) {
+                            Bitmap tmp = Bitmap.createScaledBitmap(b, w, h, true);
+                            b.recycle();
+                            b = tmp;
+                        }
+                    }
+
+                    return b;
+                } catch (FileNotFoundException e) {
+                } finally {
+                    try {
+                        if (fd != null)
+                            fd.close();
+                    } catch (IOException e) {
+                    }
+                }
+            }
+            return null;
         }
     }
 }

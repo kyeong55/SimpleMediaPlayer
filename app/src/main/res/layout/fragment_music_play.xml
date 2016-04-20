@@ -17,7 +17,7 @@
         <ImageView
             android:id="@+id/music_image"
 
-            android:tint="@color/colorTheme4"
+
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:background="@color/colorTheme1"
