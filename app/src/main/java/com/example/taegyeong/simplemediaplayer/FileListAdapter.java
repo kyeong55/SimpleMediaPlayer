@@ -23,10 +23,10 @@ public class FileListAdapter extends  RecyclerView.Adapter<FileListAdapter.ViewH
     private TextView location;
     private FileTracker fileTracker;
 
-    public FileListAdapter(Context context, TextView location){
-        fileTracker = new FileTracker();
+    public FileListAdapter(Context context, TextView location, FileTracker fileTracker){
         this.context = context;
         this.location = location;
+        this.fileTracker = fileTracker;
     }
 
     @Override
@@ -48,13 +48,28 @@ public class FileListAdapter extends  RecyclerView.Adapter<FileListAdapter.ViewH
                     notifyDataSetChanged();
                 }
                 else{
-                    Intent musicPlayIntent = new Intent(context, MusicPlayActivity.class);
-                    musicPlayIntent.putExtra("position", filePosition);
-                    musicPlayIntent.putExtra("fileList", fileTracker.getFilePathList());
-                    musicPlayIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                    context.startActivity(musicPlayIntent);
+                    if (fileTracker.getSubFileType(position) == FileType.IMAGE){
+                        //TODO: start image view activity
+                    }
+                    else if (fileTracker.getSubFileType(position) == FileType.MUSIC){
+                        Intent musicPlayIntent = new Intent(context, MusicPlayActivity.class);
+                        musicPlayIntent.putExtra("position", filePosition);
+                        musicPlayIntent.putExtra("fileList", fileTracker.getFilePathList());
+                        musicPlayIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                        context.startActivity(musicPlayIntent);
+                    }
+                    else if (fileTracker.getSubFileType(position) == FileType.VIDEO){
+                        //TODO: start video view activity
+                        Intent videoPlayIntent = new Intent(context, VideoPlayActivity.class);
+                        videoPlayIntent.putExtra("position", filePosition);
+                        videoPlayIntent.putExtra("fileList", fileTracker.getFilePathList());
+                        videoPlayIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                        context.startActivity(videoPlayIntent);
+                    }
+                    else{
+                        Toast.makeText(context, "열수 없는 파일입니다", Toast.LENGTH_SHORT).show();
+                    }
                 }
-//                    Toast.makeText(context, "여는파일이 아님", Toast.LENGTH_SHORT).show();
             }
         });
     }

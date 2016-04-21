@@ -10,9 +10,11 @@ public class FileType {
     public static final int ALL = 3;
     public static final int DIR = 4;
 
+    public static final String root = "/storage/emulated/0/DCIM/";//"/storage/external_SD/";
+
     private static final String[] imageFormat = {".jpg"};
     private static final String[] musicFormat = {".mp3"};
-    private static final String[] videoFormat = {".wmv"};
+    private static final String[] videoFormat = {".mp4"};
 
     public static boolean isRightType(String fileName, int fileType){
         if ((fileType == ALL)||(fileType == IMAGE)) {

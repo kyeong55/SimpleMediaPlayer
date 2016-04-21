@@ -46,6 +46,7 @@ public class FileListActivity extends AppCompatActivity {
 //        fileListView.setHasFixedSize(true);
 //        fileListView.setLayoutManager(layoutManager);
 //        fileListView.setAdapter(fileListAdapter);
+
         ScanTask task = new ScanTask();
         task.execute(getApplicationContext());
     }
@@ -62,6 +63,7 @@ public class FileListActivity extends AppCompatActivity {
         fileListView.setLayoutManager(layoutManager);
         fileListView.setAdapter(fileListAdapter);
         fileListView.setVerticalScrollBarEnabled(true);
+
     }
 
     @Override
@@ -73,7 +75,9 @@ public class FileListActivity extends AppCompatActivity {
     public class ScanTask extends AsyncTask<Context, Void, Void> {
         @Override
         public Void doInBackground(Context... params) {
-            fileListAdapter = new FileListAdapter(params[0],location);
+            FileTracker fileTracker = new FileTracker();
+            fileTracker.setFileType(FileType.VIDEO);
+            fileListAdapter = new FileListAdapter(params[0],location, fileTracker);
             return null;
         }
 

@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.FileFilter;
 import java.io.FileReader;
 import java.io.FilenameFilter;
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -128,18 +129,19 @@ class FileInfo{
         }
     }
 }
-public class FileTracker {
-    private final String root = "/storage/external_SD/";
+public class FileTracker{
     private FileInfo rootDir;
     private FileInfo currentDir;
     private int fileType;
 
     public FileTracker(){
-        rootDir = new FileInfo(null,new File(root));
+        rootDir = new FileInfo(null,new File(FileType.root));
         rootDir.scan();
-        fileType = FileType.MUSIC;
         currentDir = rootDir;
     }
+
+    public void setFileType(int fileType) {this.fileType = fileType;}
+
     public String getDirName() {return currentDir.getPath();}
     public int getCurrentFileNum() {
         return currentDir.getSubFileInfo(fileType).size() + currentDir.getSubFilePathList(fileType).size();
