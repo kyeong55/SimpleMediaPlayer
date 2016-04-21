@@ -29,7 +29,6 @@ public class MusicPlayService extends Service {
     }
     @Override
     public int onStartCommand(Intent intent, int flags, int startId){
-        Log.d("debugging", "onStartCommand");
         fileList = intent.getStringArrayListExtra("fileList");
         position = intent.getIntExtra("position", -1);
         musicInit(fileList.get(position));
@@ -38,7 +37,6 @@ public class MusicPlayService extends Service {
 
     @Override
     public IBinder onBind(Intent intent) {
-        Log.d("debugging", "onBind");
         return mBinder;
     }
 
@@ -88,16 +86,15 @@ public class MusicPlayService extends Service {
         return true;
     }
 
-    public boolean musicPlay(){
+    public void musicPlay(){
         Log.d("debugging","play called");
-        if(mediaPlayer.isPlaying()) {
-            mediaPlayer.pause();
-            return false;
-        }
-        else {
+        if(!mediaPlayer.isPlaying())
             mediaPlayer.start();
-            return true;
-        }
+    }
+    public void musicPause(){
+        Log.d("debugging","pause called");
+        if(mediaPlayer.isPlaying())
+            mediaPlayer.pause();
     }
     public int nextPosition(){
         if (position < fileList.size() - 1)
@@ -147,9 +144,7 @@ public class MusicPlayService extends Service {
 
     public void seekTo(int time){
         Log.d("debugging", "seekto: "+time+"/ total:"+mediaPlayer.getDuration());
-        mediaPlayer.pause();
         mediaPlayer.seekTo(time);
-        mediaPlayer.start();
     }
     public int getDuration(){
         return mediaPlayer.getDuration();

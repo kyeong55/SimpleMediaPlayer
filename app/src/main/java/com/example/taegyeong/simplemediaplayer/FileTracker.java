@@ -174,12 +174,15 @@ public class FileTracker {
 //        }
 //        return false;
 //    }
-    public ArrayList<String> openFile(int position) {
+    public int openFile(int position) {
         ArrayList<FileInfo> subFileInfo = currentDir.getSubFileInfo(fileType);
         if (position < subFileInfo.size()) {
             currentDir = subFileInfo.get(position);
-            return null;
+            return -1;
         }
+        return position - subFileInfo.size();
+    }
+    public ArrayList<String> getFilePathList() {
         return currentDir.getSubFilePathList(fileType);
     }
     public boolean returnBack() {

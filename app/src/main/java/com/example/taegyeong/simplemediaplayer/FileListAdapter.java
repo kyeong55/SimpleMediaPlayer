@@ -42,15 +42,15 @@ public class FileListAdapter extends  RecyclerView.Adapter<FileListAdapter.ViewH
         holder.layout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                ArrayList<String> fileList = fileTracker.openFile(position);
-                if(fileList == null){
+                int filePosition = fileTracker.openFile(position);
+                if(filePosition < 0){
                     location.setText(fileTracker.getDirName());
                     notifyDataSetChanged();
                 }
                 else{
                     Intent musicPlayIntent = new Intent(context, MusicPlayActivity.class);
-                    musicPlayIntent.putExtra("position", position);
-                    musicPlayIntent.putExtra("fileList", fileList);
+                    musicPlayIntent.putExtra("position", filePosition);
+                    musicPlayIntent.putExtra("fileList", fileTracker.getFilePathList());
                     musicPlayIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                     context.startActivity(musicPlayIntent);
                 }
