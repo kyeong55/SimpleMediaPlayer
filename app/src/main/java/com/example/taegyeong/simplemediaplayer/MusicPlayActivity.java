@@ -58,9 +58,10 @@ public class MusicPlayActivity extends AppCompatActivity {
         mViewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
             @Override
             public void onPageSelected(int position) {
-                if(loaded)
+                if(loaded) {
                     musicPlayService.skipTo(position);
-//                ((MusicInfoFragment)mSectionsPagerAdapter.getItem(position)).title.setSelected(true);
+                    seekBar.setMax(musicPlayService.getDuration());
+                }
             }
 
             @Override
@@ -181,6 +182,7 @@ public class MusicPlayActivity extends AppCompatActivity {
             loaded = true;
             new SeekBarThread().start();
             setUp(musicPlayService.getPosition());
+            seekBar.setMax(musicPlayService.getDuration());
         }
 
         @Override
@@ -194,11 +196,11 @@ public class MusicPlayActivity extends AppCompatActivity {
         public void run() {
             while(isPlaying) {
                 seekBar.setProgress(musicPlayService.getCurrentPosition());
-                if(musicPlayService.isChanged()){
-                    seekBar.setMax(musicPlayService.getDuration());
-                    seekBar.setProgress(0);
-                    musicPlayService.notifiedChange();
-                }
+//                if(musicPlayService.isChanged()){
+//                    seekBar.setMax(musicPlayService.getDuration());
+//                    seekBar.setProgress(0);
+//                    musicPlayService.notifiedChange();
+//                }
                 try {
                     sleep(100);
                 } catch (InterruptedException e) {
