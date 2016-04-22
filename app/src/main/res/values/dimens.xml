@@ -4,7 +4,7 @@
     <dimen name="activity_vertical_margin">16dp</dimen>
     <dimen name="fab_margin">16dp</dimen>
 
-    <!-- MainActivity -->
+    <!-- FileListActivity -->
     <dimen name="main_title_text_size">22sp</dimen>
     <dimen name="main_location_text_size">18sp</dimen>
     <!-- VideoPlayActivity -->

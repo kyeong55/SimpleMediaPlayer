@@ -24,8 +24,6 @@ public class FileListActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_filelist);
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
 
         pageLoading = findViewById(R.id.main_loading_page);
         TextView loadingTitle1 = (TextView) findViewById(R.id.loading_title1);
@@ -60,10 +58,6 @@ public class FileListActivity extends AppCompatActivity {
     public void onBackPressed(){
         if (!fileListAdapter.returnBack())
             super.onBackPressed();
-    }
-
-    public void finishScanning(){
-        pageLoading.setVisibility(View.GONE);
     }
 
     public void selectFileType(int fileType){
