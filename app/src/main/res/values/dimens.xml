@@ -5,8 +5,8 @@
     <dimen name="fab_margin">16dp</dimen>
 
     <!-- FileListActivity -->
-    <dimen name="main_title_text_size">22sp</dimen>
-    <dimen name="main_location_text_size">18sp</dimen>
+    <dimen name="filelist_title_text_size">22sp</dimen>
+    <dimen name="filelist_location_text_size">18sp</dimen>
     <!-- VideoPlayActivity -->
     <dimen name="video_button_size">80dp</dimen>
     <dimen name="video_button_padding">16dp</dimen>
