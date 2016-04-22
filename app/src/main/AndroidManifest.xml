@@ -14,16 +14,16 @@
             android:name=".MainActivity"
             android:label="@string/app_name"
             android:theme="@style/AppTheme.NoActionBar">
+        </activity>
+        <activity
+            android:name=".FileListActivity"
+            android:theme="@style/AppTheme.Player" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity
-            android:name=".FileListActivity"
-            android:label="@string/title_activity_filelist"
-            android:theme="@style/AppTheme.Player" />
         <activity
             android:name=".MusicPlayActivity"
             android:theme="@style/AppTheme.Player" />

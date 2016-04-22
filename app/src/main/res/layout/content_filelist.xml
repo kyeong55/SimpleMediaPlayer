@@ -8,11 +8,6 @@
     tools:context=".FileListActivity"
     tools:showIn="@layout/activity_filelist"
     android:orientation="vertical">
-    <ProgressBar
-        android:id="@+id/filelist_progressbar"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_margin="120dp"/>
     <android.support.v7.widget.CardView
         android:layout_width="wrap_content"
         android:layout_height="28dp"
@@ -29,11 +24,10 @@
             android:paddingRight="16dp"
             android:textSize="@dimen/main_location_text_size"
             android:textColor="@color/colorBlack"
-            android:background="@color/colorTheme1"
-            android:text="asdsadsad"/>
+            android:background="@color/colorTheme1" />
     </android.support.v7.widget.CardView>
     <android.support.v7.widget.RecyclerView
         android:id="@+id/filelist_list"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"></android.support.v7.widget.RecyclerView>
+        android:layout_height="match_parent"/>
 </LinearLayout>

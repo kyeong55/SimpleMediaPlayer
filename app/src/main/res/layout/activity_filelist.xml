@@ -36,5 +36,7 @@
         <include layout="@layout/content_filelist" />
 
     </LinearLayout>
-    <include layout="@layout/content_menupage" />
+    <include
+        android:id="@+id/main_loading_page"
+        layout="@layout/content_menupage" />
 </RelativeLayout>

@@ -12,6 +12,7 @@
         android:layout_height="0dp"
         android:layout_weight="3" />
     <LinearLayout
+        android:id="@+id/loading_title"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:gravity="center_horizontal|bottom"
@@ -22,14 +23,14 @@
             android:layout_height="wrap_content"
             android:orientation="vertical">
             <TextView
-                android:id="@+id/main_name1"
+                android:id="@+id/loading_title1"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="simple"
                 android:textColor="@color/colorTheme3"
                 android:textSize="32sp"/>
             <TextView
-                android:id="@+id/main_name2"
+                android:id="@+id/loading_title2"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Media Player"
@@ -42,7 +43,6 @@
         android:layout_height="0dp"
         android:layout_weight="2" />
     <ProgressBar
-        android:id="@+id/filelist_progressbar"
         android:layout_width="32dp"
         android:layout_height="32dp"
         android:indeterminate="true"
@@ -50,7 +50,7 @@
         android:indeterminateTint="@color/colorTheme3"
         android:layout_marginBottom="12dp"/>
     <TextView
-        android:id="@+id/main_loading"
+        android:id="@+id/loading_detail"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:gravity="center"
