@@ -1,24 +1,22 @@
 package com.example.taegyeong.simplemediaplayer;
 
-import android.content.Context;
 import android.graphics.Typeface;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.support.v7.widget.Toolbar;
 import android.view.View;
 import android.widget.Button;
-import android.widget.ProgressBar;
 import android.widget.TextView;
 
 public class FileListActivity extends AppCompatActivity {
 
     private View pageLoading;
     private View pageSelect;
-    private FileListAdapter fileListAdapter;
+    private TextView fileListTitle;
     private TextView fileListLocation;
+    private FileListAdapter fileListAdapter;
 
     private FileTracker fileTracker;
 
@@ -38,7 +36,7 @@ public class FileListActivity extends AppCompatActivity {
         Button selectMusicButton = (Button) findViewById(R.id.select_music_button);
         Button selectVideoButton = (Button) findViewById(R.id.select_video_button);
 
-        TextView title = (TextView) findViewById(R.id.filelist_title);
+        fileListTitle = (TextView) findViewById(R.id.filelist_title);
         fileListLocation = (TextView) findViewById(R.id.filelist_location);
 
         assert pageLoading != null;
@@ -49,14 +47,14 @@ public class FileListActivity extends AppCompatActivity {
         assert selectImageButton != null;
         assert selectMusicButton != null;
         assert selectVideoButton != null;
-        assert title != null;
+        assert fileListTitle != null;
         assert fileListLocation != null;
 
         SMPCustom.branBlack = Typeface.createFromAsset(getAssets(), "brandon_blk.otf");
         SMPCustom.branBold = Typeface.createFromAsset(getAssets(), "brandon_bld.otf");
         SMPCustom.branRegular = Typeface.createFromAsset(getAssets(), "brandon_med.otf");
         SMPCustom.branLight = Typeface.createFromAsset(getAssets(), "brandon_reg.otf");
-        title.setTypeface(SMPCustom.branBold);
+        fileListTitle.setTypeface(SMPCustom.branBold);
         fileListLocation.setTypeface(SMPCustom.branRegular);
 
         loadingTitle1.setTypeface(SMPCustom.branLight);
@@ -111,6 +109,18 @@ public class FileListActivity extends AppCompatActivity {
         fileListView.setLayoutManager(layoutManager);
         fileListView.setAdapter(fileListAdapter);
         fileListView.setVerticalScrollBarEnabled(true);
+
+        switch (fileType){
+            case SMPCustom.TYPE_IMAGE:
+                fileListTitle.setText("IMAGE FILES");
+                break;
+            case SMPCustom.TYPE_MUSIC:
+                fileListTitle.setText("MUSIC FILES");
+                break;
+            case SMPCustom.TYPE_VIDEO:
+                fileListTitle.setText("VIDEO FILES");
+                break;
+        }
 
         pageSelect.setVisibility(View.GONE);
     }
