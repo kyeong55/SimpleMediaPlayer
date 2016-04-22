@@ -49,7 +49,11 @@ public class FileListAdapter extends  RecyclerView.Adapter<FileListAdapter.ViewH
                 }
                 else{
                     if (fileTracker.getSubFileType(position) == FileType.IMAGE){
-                        //TODO: start image view activity
+                        Intent imagePlayIntent = new Intent(context, ImagePlayActivity.class);
+                        imagePlayIntent.putExtra("position", filePosition);
+                        imagePlayIntent.putExtra("fileList", fileTracker.getFilePathList());
+                        imagePlayIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                        context.startActivity(imagePlayIntent);
                     }
                     else if (fileTracker.getSubFileType(position) == FileType.MUSIC){
                         Intent musicPlayIntent = new Intent(context, MusicPlayActivity.class);
@@ -59,7 +63,6 @@ public class FileListAdapter extends  RecyclerView.Adapter<FileListAdapter.ViewH
                         context.startActivity(musicPlayIntent);
                     }
                     else if (fileTracker.getSubFileType(position) == FileType.VIDEO){
-                        //TODO: start video view activity
                         Intent videoPlayIntent = new Intent(context, VideoPlayActivity.class);
                         videoPlayIntent.putExtra("position", filePosition);
                         videoPlayIntent.putExtra("fileList", fileTracker.getFilePathList());

@@ -36,6 +36,9 @@
         <activity
             android:name=".VideoPlayActivity"
             android:theme="@style/AppTheme.Player" />
+
+        <activity android:name=".ImagePlayActivity"
+            android:theme="@style/AppTheme.Player" />
     </application>
 
 </manifest>

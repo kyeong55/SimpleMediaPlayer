@@ -25,7 +25,7 @@
         android:layout_width="match_parent"
         android:layout_height="160dp"
         android:orientation="vertical"
-        android:background="#A0000000"
+        android:background="@color/colorTransparent"
         android:layout_alignParentBottom="true">
         <SeekBar
             android:id="@+id/video_seekbar"

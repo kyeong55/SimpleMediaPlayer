@@ -15,6 +15,7 @@
     <color name="colorGray2">#424242</color>
     <color name="colorWhite">#FFFFFF</color>
     <color name="colorBlack">#000000</color>
+    <color name="colorTransparent">#A0000000</color>
     <color name="colorLightGray">#616161</color>
     <color name="colorShadow">#61000000</color>
 </resources>

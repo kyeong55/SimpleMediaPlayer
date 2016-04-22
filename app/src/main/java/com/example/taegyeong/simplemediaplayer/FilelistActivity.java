@@ -76,7 +76,7 @@ public class FileListActivity extends AppCompatActivity {
         @Override
         public Void doInBackground(Context... params) {
             FileTracker fileTracker = new FileTracker();
-            fileTracker.setFileType(FileType.VIDEO);
+            fileTracker.setFileType(FileType.IMAGE);
             fileListAdapter = new FileListAdapter(params[0],location, fileTracker);
             return null;
         }
