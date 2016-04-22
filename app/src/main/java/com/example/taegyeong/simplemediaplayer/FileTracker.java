@@ -2,11 +2,7 @@ package com.example.taegyeong.simplemediaplayer;
 
 import java.io.File;
 import java.io.FileFilter;
-import java.io.FileReader;
-import java.io.FilenameFilter;
-import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.List;
 
 /**
  * Created by taegyeong on 16. 4. 9..
@@ -36,7 +32,7 @@ class FileInfo{
     public FileInfo getParent() {return parent;}
     public boolean isDirectory() {return file.isDirectory();}
     public int getSubFileNum(int fileType) {
-        if (fileType == FileType.ALL)
+        if (fileType == SMPCustom.TYPE_ALL)
             return subFileNum[0] + subFileNum[1] + subFileNum[2];
         else
             return subFileNum[fileType];
@@ -53,11 +49,11 @@ class FileInfo{
         return new File(getSubFilePathList(fileType).get(position)).getName();
     }
     public ArrayList<String> getSubFilePathList(int fileType) {
-        if(fileType == FileType.IMAGE)
+        if(fileType == SMPCustom.TYPE_IMAGE)
             return imagePathList;
-        else if(fileType == FileType.MUSIC)
+        else if(fileType == SMPCustom.TYPE_MUSIC)
             return musicPathList;
-        else if(fileType == FileType.VIDEO)
+        else if(fileType == SMPCustom.TYPE_VIDEO)
             return videoPathList;
         return null;
     }
@@ -82,7 +78,7 @@ class FileInfo{
             File[] subFiles = file.listFiles(new FileFilter() {
                 @Override
                 public boolean accept(File file) {
-                    int type = FileType.checkType(file.getName(), FileType.ALL);
+                    int type = SMPCustom.checkType(file.getName(), SMPCustom.TYPE_ALL);
                     if(type < 0)
                         return false;
                     subFileNum[type]++;
@@ -90,27 +86,11 @@ class FileInfo{
                     return true;
                 }
             });
-//            File[] subFiles = file.listFiles(new FilenameFilter() {
-//                @Override
-//                public boolean accept(File dir, String filename) {
-////                    for(int i = 0; i < filter.size(); i++){
-////                        if(filename.endsWith("."+filter.get(i)))
-////                            return true;
-////                    }
-////                    return false;
-//                    int type = FileType.checkType(filename, FileType.ALL);
-//                    if(type < 0)
-//                        return false;
-//                    subFileNum[type]++;
-//                    getSubFilePathList(type).add(filename);
-//                    return true;
-//                }
-//            });
             if(subDirs != null){
                 for (File subDir : subDirs) {
                     FileInfo newDir = new FileInfo(this,subDir);
                     newDir.scan();
-                    if (newDir.getSubFileNum(FileType.ALL) > 0) {
+                    if (newDir.getSubFileNum(SMPCustom.TYPE_ALL) > 0) {
                         subFileInfo.add(newDir);
                         subFileNum[0] += newDir.subFileNum[0];
                         subFileNum[1] += newDir.subFileNum[1];
@@ -118,14 +98,6 @@ class FileInfo{
                     }
                 }
             }
-//            if(subFiles != null){
-//                for (File subFile : subFiles){
-////                    subFileInfo.add(new FileInfo(this,subFile));
-////                    subFileNum++;
-//                    subFileNameList.add(subFile.getName());
-//                    subFilePathList.add(subFile.getPath());
-//                }
-//            }
         }
     }
 }
@@ -135,7 +107,7 @@ public class FileTracker{
     private int fileType;
 
     public FileTracker(){
-        rootDir = new FileInfo(null,new File(FileType.root));
+        rootDir = new FileInfo(null,new File(SMPCustom.root));
         rootDir.scan();
         currentDir = rootDir;
     }
@@ -149,7 +121,7 @@ public class FileTracker{
     public int getSubFileType(int position) {
         ArrayList<FileInfo> subFileInfo = currentDir.getSubFileInfo(fileType);
         if (position < subFileInfo.size())
-            return FileType.DIR;
+            return SMPCustom.TYPE_DIR;
         return fileType;
     }
     public String getFileName(int position) {
@@ -158,24 +130,6 @@ public class FileTracker{
             return subFileInfo.get(position).getName();
         return currentDir.getSubFileName(position - subFileInfo.size(), fileType);
     }
-//    public String getFilePath(int position) {return currentDir.getSubFileInfo().get(position).getPath();}
-//    public ArrayList<String> getFileList() {
-//        ArrayList<String> fileList = new ArrayList<>();
-//        List<FileInfo> subFileInfo = currentDir.getSubFileInfo();
-//        for (int i=0;i<currentDir.getSubFileInfo().size();i++){
-//            fileList.add(currentDir.getSubFileInfo().get(i).getPath());
-//        }
-//        return fileList;
-//    }
-//    public boolean openDir(int position) {
-//        if(currentDir.getSubFileInfo().get(position).isDirectory()) {
-//            if (position < currentDir.getSubFileInfo().size()) {
-//                currentDir = currentDir.getSubFileInfo().get(position);
-//                return true;
-//            }
-//        }
-//        return false;
-//    }
     public int openFile(int position) {
         ArrayList<FileInfo> subFileInfo = currentDir.getSubFileInfo(fileType);
         if (position < subFileInfo.size()) {

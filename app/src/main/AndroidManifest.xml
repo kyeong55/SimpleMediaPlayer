@@ -23,7 +23,7 @@
         <activity
             android:name=".FileListActivity"
             android:label="@string/title_activity_filelist"
-            android:theme="@style/AppTheme.NoActionBar" />
+            android:theme="@style/AppTheme.Player" />
         <activity
             android:name=".MusicPlayActivity"
             android:theme="@style/AppTheme.Player" />

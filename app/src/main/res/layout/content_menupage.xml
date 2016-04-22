@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:orientation="vertical" android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".FileListActivity"
+    tools:showIn="@layout/activity_filelist"
+    android:background="@color/colorTheme2"
+    android:gravity="center_horizontal">
+    <Space
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="3" />
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center_horizontal|bottom"
+        android:background="@color/colorTheme1"
+        android:elevation="2dp">
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+            <TextView
+                android:id="@+id/main_name1"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="simple"
+                android:textColor="@color/colorTheme3"
+                android:textSize="32sp"/>
+            <TextView
+                android:id="@+id/main_name2"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Media Player"
+                android:textColor="@color/colorTheme4"
+                android:textSize="60sp" />
+        </LinearLayout>
+    </LinearLayout>
+    <Space
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="2" />
+    <ProgressBar
+        android:id="@+id/filelist_progressbar"
+        android:layout_width="32dp"
+        android:layout_height="32dp"
+        android:indeterminate="true"
+        android:indeterminateTintMode="src_atop"
+        android:indeterminateTint="@color/colorTheme3"
+        android:layout_marginBottom="12dp"/>
+    <TextView
+        android:id="@+id/main_loading"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:text="Loading: Scanning Files..."
+        android:textSize="20sp"
+        android:textColor="@color/colorText"/>
+    <Space
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="2" />
+</LinearLayout>

@@ -1,6 +1,7 @@
 package com.example.taegyeong.simplemediaplayer;
 
 import android.content.Context;
+import android.graphics.Typeface;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
@@ -25,17 +26,30 @@ public class FileListActivity extends AppCompatActivity {
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-//        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
-//        fab.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View view) {
-//                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-//                        .setAction("Action", null).show();
-//            }
-//        });
+        TextView title = (TextView) findViewById(R.id.filelist_title);
+        location = (TextView) findViewById(R.id.filelist_location);
+        progressBar = (ProgressBar) findViewById(R.id.filelist_progressbar);
+        TextView name1 = (TextView) findViewById(R.id.main_name1);
+        TextView name2 = (TextView) findViewById(R.id.main_name2);
+//        TextView name3 = (TextView) findViewById(R.id.main_name3);
+        TextView loading = (TextView) findViewById(R.id.main_loading);
 
-        location = (TextView) findViewById(R.id.location);
-        progressBar = (ProgressBar) findViewById(R.id.progressbar);
+
+        assert title != null;
+        assert location != null;
+        assert progressBar != null;
+
+        SMPCustom.branBlack = Typeface.createFromAsset(getAssets(), "brandon_blk.otf");
+        SMPCustom.branBold = Typeface.createFromAsset(getAssets(), "brandon_bld.otf");
+        SMPCustom.branRegular = Typeface.createFromAsset(getAssets(), "brandon_med.otf");
+        SMPCustom.branLight = Typeface.createFromAsset(getAssets(), "brandon_reg.otf");
+        title.setTypeface(SMPCustom.branBold);
+        location.setTypeface(SMPCustom.branRegular);
+
+        name1.setTypeface(SMPCustom.branLight);
+        name2.setTypeface(SMPCustom.branBold);
+        loading.setTypeface(SMPCustom.branRegular);
+//        name3.setTypeface(SMPCustom.branBold);
 
 //        LinearLayoutManager layoutManager = new LinearLayoutManager(getApplicationContext());
 //        layoutManager.setOrientation(LinearLayoutManager.VERTICAL);
@@ -56,9 +70,8 @@ public class FileListActivity extends AppCompatActivity {
         LinearLayoutManager layoutManager = new LinearLayoutManager(getApplicationContext());
         layoutManager.setOrientation(LinearLayoutManager.VERTICAL);
 
-//        fileListAdapter = new FileListAdapter(getApplicationContext(),location);
-
-        RecyclerView fileListView = (RecyclerView) findViewById(R.id.filelist);
+        RecyclerView fileListView = (RecyclerView) findViewById(R.id.filelist_list);
+        assert fileListView != null;
         fileListView.setHasFixedSize(true);
         fileListView.setLayoutManager(layoutManager);
         fileListView.setAdapter(fileListAdapter);
@@ -76,7 +89,7 @@ public class FileListActivity extends AppCompatActivity {
         @Override
         public Void doInBackground(Context... params) {
             FileTracker fileTracker = new FileTracker();
-            fileTracker.setFileType(FileType.IMAGE);
+            fileTracker.setFileType(SMPCustom.TYPE_MUSIC);
             fileListAdapter = new FileListAdapter(params[0],location, fileTracker);
             return null;
         }

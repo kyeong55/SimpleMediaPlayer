@@ -1,35 +1,37 @@
 package com.example.taegyeong.simplemediaplayer;
 
+import android.graphics.Typeface;
+
 /**
  * Created by taegyeong on 16. 4. 21..
  */
-public class FileType {
-    public static final int IMAGE = 0;
-    public static final int MUSIC = 1;
-    public static final int VIDEO = 2;
-    public static final int ALL = 3;
-    public static final int DIR = 4;
+public class SMPCustom {
+    public static final int TYPE_IMAGE = 0;
+    public static final int TYPE_MUSIC = 1;
+    public static final int TYPE_VIDEO = 2;
+    public static final int TYPE_ALL = 3;
+    public static final int TYPE_DIR = 4;
 
-    public static final String root = "/storage/emulated/0/DCIM/";//"/storage/external_SD/";
+    public static final String root = "/storage/external_SD/";//"/storage/emulated/0/DCIM/";
 
     private static final String[] imageFormat = {".jpg"};
     private static final String[] musicFormat = {".mp3"};
     private static final String[] videoFormat = {".mp4"};
 
     public static boolean isRightType(String fileName, int fileType){
-        if ((fileType == ALL)||(fileType == IMAGE)) {
+        if ((fileType == TYPE_ALL)||(fileType == TYPE_IMAGE)) {
             for (String format : imageFormat){
                 if (fileName.endsWith(format))
                     return true;
             }
         }
-        if ((fileType == ALL)||(fileType == MUSIC)) {
+        if ((fileType == TYPE_ALL)||(fileType == TYPE_MUSIC)) {
             for (String format : musicFormat){
                 if (fileName.endsWith(format))
                     return true;
             }
         }
-        if ((fileType == ALL)||(fileType == VIDEO)) {
+        if ((fileType == TYPE_ALL)||(fileType == TYPE_VIDEO)) {
             for (String format : videoFormat){
                 if (fileName.endsWith(format))
                     return true;
@@ -39,24 +41,29 @@ public class FileType {
     }
 
     public static int checkType(String fileName, int fileType){
-        if ((fileType == ALL)||(fileType == IMAGE)) {
+        if ((fileType == TYPE_ALL)||(fileType == TYPE_IMAGE)) {
             for (String format : imageFormat){
                 if (fileName.endsWith(format))
-                    return IMAGE;
+                    return TYPE_IMAGE;
             }
         }
-        if ((fileType == ALL)||(fileType == MUSIC)) {
+        if ((fileType == TYPE_ALL)||(fileType == TYPE_MUSIC)) {
             for (String format : musicFormat){
                 if (fileName.endsWith(format))
-                    return MUSIC;
+                    return TYPE_MUSIC;
             }
         }
-        if ((fileType == ALL)||(fileType == VIDEO)) {
+        if ((fileType == TYPE_ALL)||(fileType == TYPE_VIDEO)) {
             for (String format : videoFormat){
                 if (fileName.endsWith(format))
-                    return VIDEO;
+                    return TYPE_VIDEO;
             }
         }
         return -1;
     }
+
+    public static Typeface branBlack;
+    public static Typeface branBold;
+    public static Typeface branRegular;
+    public static Typeface branLight;
 }
