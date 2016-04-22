@@ -16,8 +16,12 @@
             android:id="@+id/filelist_elem_thumb_album"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
+            android:layout_margin="2dp" />
+        <ImageView
+            android:id="@+id/filelist_elem_thumb_icon"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
             android:layout_margin="2dp"
-            android:src="@drawable/icon_video"
             android:padding="6dp"
             android:background="@drawable/music_background"/>
         <ImageView

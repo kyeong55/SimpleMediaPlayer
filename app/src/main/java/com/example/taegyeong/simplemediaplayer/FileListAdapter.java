@@ -1,7 +1,16 @@
 package com.example.taegyeong.simplemediaplayer;
 
+import android.content.ContentResolver;
+import android.content.ContentUris;
 import android.content.Context;
+import android.content.CursorLoader;
 import android.content.Intent;
+import android.database.Cursor;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.net.Uri;
+import android.os.AsyncTask;
+import android.provider.MediaStore;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -10,9 +19,23 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import java.io.FileNotFoundException;
+import java.io.InputStream;
+
 /**
  * Created by taegyeong on 16. 4. 8..
  */
+
+class LoadAlbumClass{
+    int albumID;
+    ImageView icon;
+    ImageView album;
+    LoadAlbumClass (int albumID, ImageView icon, ImageView album){
+        this.albumID = albumID;
+        this.icon = icon;
+        this.album = album;
+    }
+}
 
 public class FileListAdapter extends  RecyclerView.Adapter<FileListAdapter.ViewHolder> {
 
@@ -50,24 +73,69 @@ public class FileListAdapter extends  RecyclerView.Adapter<FileListAdapter.ViewH
                 case SMPCustom.TYPE_IMAGE:
                     holder.subtitle.setText("");
                     holder.folder.setVisibility(View.GONE);
-                    holder.album.setImageDrawable(context.getDrawable(R.drawable.icon_image));
+                    holder.icon.setVisibility(View.VISIBLE);
+                    holder.album.setVisibility(View.GONE);
+                    holder.icon.setImageDrawable(context.getDrawable(R.drawable.icon_image));
                     break;
                 case SMPCustom.TYPE_MUSIC:
-                    holder.subtitle.setText("");
+                    Uri fileUri = Uri.parse(fileTracker.getFilePath(position));
+                    String filePath = fileUri.getPath();
+                    Cursor c;
+                    try {
+                        c = context.getContentResolver().query(MediaStore.Audio.Media.EXTERNAL_CONTENT_URI, null, "_data ='" + filePath + "'", null, null);
+                    }catch (Exception e){
+                        c = null;
+                    }
+                    if (c!= null) {
+                        c.moveToNext();
+                        if (c.getCount() > 0) {
+                            int id = c.getInt(0);
+                            Uri uri = ContentUris.withAppendedId(MediaStore.Audio.Media.EXTERNAL_CONTENT_URI, id);
+                            CursorLoader cursorLoader = new CursorLoader(context, uri, null, null, null, null);
+                            Cursor cur = cursorLoader.loadInBackground();
+                            if (cur.moveToFirst()) {
+                                holder.subtitle.setText(cur.getString(cur.getColumnIndex(MediaStore.Audio.AlbumColumns.ARTIST)));
+                                int albumID = Integer.parseInt(cur.getString(cur.getColumnIndex(MediaStore.Audio.Media.ALBUM_ID)));
+                                Bitmap albumArt = getAlbumArt(context, albumID);
+                                if (albumArt == null) {
+                                    holder.icon.setImageDrawable(context.getDrawable(R.drawable.icon_music));
+                                    holder.icon.setVisibility(View.VISIBLE);
+                                    holder.album.setVisibility(View.GONE);
+                                } else {
+                                    holder.album.setImageBitmap(albumArt);
+                                    holder.icon.setVisibility(View.GONE);
+                                    holder.album.setVisibility(View.VISIBLE);
+                                }
+                            }
+                        }
+                        c.close();
+                    }
+                    else{
+                        holder.subtitle.setText("unknown");
+                        holder.icon.setImageDrawable(context.getDrawable(R.drawable.icon_music));
+                        holder.icon.setVisibility(View.VISIBLE);
+                        holder.album.setVisibility(View.GONE);
+                    }
                     holder.folder.setVisibility(View.GONE);
-                    holder.album.setImageDrawable(context.getDrawable(R.drawable.icon_music));
                     break;
                 case SMPCustom.TYPE_VIDEO:
                     holder.subtitle.setText("");
                     holder.folder.setVisibility(View.GONE);
-                    holder.album.setImageDrawable(context.getDrawable(R.drawable.icon_video));
+                    holder.icon.setVisibility(View.VISIBLE);
+                    holder.album.setVisibility(View.GONE);
+                    holder.icon.setImageDrawable(context.getDrawable(R.drawable.icon_video));
                     break;
                 case SMPCustom.TYPE_DIR:
                     holder.folder.setVisibility(View.VISIBLE);
+                    holder.icon.setVisibility(View.GONE);
+                    holder.album.setVisibility(View.GONE);
                     holder.subtitle.setText(fileTracker.getSubFileNum(position)+" files");
                     break;
                 default:
                     holder.subtitle.setText("");
+                    holder.folder.setVisibility(View.GONE);
+                    holder.icon.setVisibility(View.GONE);
+                    holder.album.setVisibility(View.GONE);
                     break;
             }
             holder.layout.setOnClickListener(new View.OnClickListener() {
@@ -127,11 +195,41 @@ public class FileListAdapter extends  RecyclerView.Adapter<FileListAdapter.ViewH
         return false;
     }
 
+    private Bitmap getAlbumArt(Context mContext, long albumId)
+    {
+        Uri artworkUri = Uri.parse("content://media/external/audio/albumart");
+        Uri uri = ContentUris.withAppendedId(artworkUri, albumId);
+        ContentResolver cr = mContext.getContentResolver();
+        InputStream in = null;
+        try {
+            in = cr.openInputStream(uri);
+
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        }
+        Bitmap artwork = BitmapFactory.decodeStream(in);
+        if (artwork == null)
+            return null;
+        int scale = 200;
+        if (artwork.getWidth() > artwork.getHeight()) {
+            if (artwork.getHeight() > scale)
+                return Bitmap.createScaledBitmap(artwork, scale*artwork.getWidth()/artwork.getHeight(), scale, false);
+            else
+                return artwork;
+        } else {
+            if (artwork.getWidth() > scale)
+                return Bitmap.createScaledBitmap(artwork, scale, scale*artwork.getHeight()/artwork.getWidth(), false);
+            else
+                return artwork;
+        }
+    }
+
     public class ViewHolder extends RecyclerView.ViewHolder {
 
         TextView title;
         TextView subtitle;
         ImageView album;
+        ImageView icon;
         ImageView folder;
         View layout;
 
@@ -143,6 +241,7 @@ public class FileListAdapter extends  RecyclerView.Adapter<FileListAdapter.ViewH
                 title = (TextView) itemView.findViewById(R.id.filelist_elem_title);
                 subtitle = (TextView) itemView.findViewById(R.id.filelist_elem_artist);
                 album = (ImageView) itemView.findViewById(R.id.filelist_elem_thumb_album);
+                icon = (ImageView) itemView.findViewById(R.id.filelist_elem_thumb_icon);
                 folder = (ImageView) itemView.findViewById(R.id.filelist_elem_thumb_folder);
                 layout = itemView;
             }

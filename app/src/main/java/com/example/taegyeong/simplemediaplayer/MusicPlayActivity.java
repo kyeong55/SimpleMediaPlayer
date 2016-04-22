@@ -11,6 +11,7 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.media.MediaPlayer;
 import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.IBinder;
 import android.os.ParcelFileDescriptor;
 import android.provider.MediaStore;
@@ -28,6 +29,7 @@ import android.widget.ImageView;
 import android.widget.SeekBar;
 import android.widget.TextView;
 
+import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
@@ -241,6 +243,8 @@ public class MusicPlayActivity extends AppCompatActivity {
         TextView title;
         TextView artist;
 
+        int albumID;
+
         public MusicInfoFragment(String filePath) {
             this.filePath = filePath;
         }
@@ -255,23 +259,39 @@ public class MusicPlayActivity extends AppCompatActivity {
 
             title.setSelected(true);
 
+            title.setTypeface(SMPCustom.branBold);
+            artist.setTypeface(SMPCustom.branRegular);
+
             Uri fileUri = Uri.parse(filePath);
             String filePath = fileUri.getPath();
-            Cursor c = container.getContext().getContentResolver().query(MediaStore.Audio.Media.EXTERNAL_CONTENT_URI,null,"_data ='" + filePath + "'",null,null);
-            c.moveToNext();
-            if(c.getCount()>0) {
-                int id = c.getInt(0);
-                Uri uri = ContentUris.withAppendedId(MediaStore.Audio.Media.EXTERNAL_CONTENT_URI,id);
-                Cursor cur = managedQuery(uri, null, null, null, null);
-                if(cur.moveToFirst()) {
-                    title.setText(cur.getString(cur.getColumnIndex(MediaStore.Audio.AudioColumns.TITLE)));
-                    artist.setText(cur.getString(cur.getColumnIndex(MediaStore.Audio.AlbumColumns.ARTIST)));
-                    int albumID = Integer.parseInt(cur.getString(cur.getColumnIndex(MediaStore.Audio.Media.ALBUM_ID)));
-//                    albumArt.setImageBitmap(getArtworkQuick(container.getContext(),albumID, 50, 50));
-                    albumArt.setImageBitmap(getAlbumArt(container.getContext(),albumID));
-                }
+            Cursor c;
+            try {
+                c = container.getContext().getContentResolver().query(MediaStore.Audio.Media.EXTERNAL_CONTENT_URI,null,"_data ='" + filePath + "'",null,null);
+            }catch (Exception e){
+                c = null;
             }
-            c.close();
+            if (c!= null) {
+                c.moveToNext();
+                if (c.getCount() > 0) {
+                    int id = c.getInt(0);
+                    Uri uri = ContentUris.withAppendedId(MediaStore.Audio.Media.EXTERNAL_CONTENT_URI, id);
+                    Cursor cur = managedQuery(uri, null, null, null, null);
+                    if (cur.moveToFirst()) {
+                        title.setText(cur.getString(cur.getColumnIndex(MediaStore.Audio.AudioColumns.TITLE)));
+                        artist.setText(cur.getString(cur.getColumnIndex(MediaStore.Audio.AlbumColumns.ARTIST)));
+                        albumID = Integer.parseInt(cur.getString(cur.getColumnIndex(MediaStore.Audio.Media.ALBUM_ID)));
+//                    albumArt.setImageBitmap(getArtworkQuick(container.getContext(),albumID, 50, 50));
+//                    albumArt.setImageBitmap(getAlbumArt(container.getContext(),albumID));
+                        LoadAlbumTask task = new LoadAlbumTask();
+                        task.execute(container.getContext());
+                    }
+                }
+                c.close();
+            }
+            else{
+                title.setText(new File(filePath).getName());
+                artist.setText("unknown");
+            }
             return rootView;
         }
 
@@ -349,5 +369,17 @@ public class MusicPlayActivity extends AppCompatActivity {
 //            }
 //            return null;
 //        }
+        public class LoadAlbumTask extends AsyncTask<Context, Void, Bitmap> {
+            @Override
+            public Bitmap doInBackground(Context... params) {
+                return getAlbumArt(params[0],albumID);
+            }
+
+            @Override
+            public void onPostExecute(Bitmap result) {
+                super.onPostExecute(result);
+                albumArt.setImageBitmap(result);
+            }
+        }
     }
 }

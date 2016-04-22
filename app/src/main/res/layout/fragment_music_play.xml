@@ -12,12 +12,11 @@
         android:background="@color/colorWhite"
         android:elevation="4dp"
         android:layout_marginTop="32dp"
-        android:layout_marginBottom="24dp">
+        android:layout_marginBottom="20dp">
         <ImageView
             android:id="@+id/music_image"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:background="@color/colorTheme1"
             android:layout_margin="12dp"
             android:scaleType="centerCrop"/>
     </FrameLayout>
@@ -32,7 +31,7 @@
         android:layout_marginRight="32dp"
         android:textColor="@color/colorWhite"
         android:textStyle="bold"
-        android:textSize="32sp"/>
+        android:textSize="36sp"/>
     <TextView
         android:id="@+id/music_artist"
         android:layout_width="match_parent"
@@ -41,6 +40,6 @@
         android:ellipsize="end"
         android:layout_marginLeft="32dp"
         android:layout_marginRight="32dp"
-        android:textColor="@color/colorWhite"
-        android:textSize="18sp"/>
+        android:textColor="@color/colorTheme1"
+        android:textSize="20sp"/>
 </LinearLayout>

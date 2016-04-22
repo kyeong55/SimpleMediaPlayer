@@ -12,7 +12,7 @@ public class SMPCustom {
     public static final int TYPE_ALL = 3;
     public static final int TYPE_DIR = 4;
 
-    public static final String root = "/storage/external_SD/";//"/storage/emulated/0/DCIM/";
+    public static final String root = "/storage/";//"/storage/external_SD/";//"/storage/emulated/0/DCIM/";
 
     private static final String[] imageFormat = {".jpg"};
     private static final String[] musicFormat = {".mp3"};

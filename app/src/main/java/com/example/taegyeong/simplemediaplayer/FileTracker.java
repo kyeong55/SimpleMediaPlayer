@@ -136,6 +136,12 @@ public class FileTracker{
             return subFileInfo.get(position).getName();
         return currentDir.getSubFileName(position - subFileInfo.size(), fileType);
     }
+    public String getFilePath(int position) {
+        ArrayList<FileInfo> subFileInfo = currentDir.getSubFileInfo(fileType);
+        if (position < subFileInfo.size())
+            return subFileInfo.get(position).getPath();
+        return currentDir.getSubFilePathList(fileType).get(position - subFileInfo.size());
+    }
     public int openFile(int position) {
         ArrayList<FileInfo> subFileInfo = currentDir.getSubFileInfo(fileType);
         if (position < subFileInfo.size()) {
