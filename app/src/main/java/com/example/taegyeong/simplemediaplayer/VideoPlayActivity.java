@@ -20,7 +20,6 @@ public class VideoPlayActivity extends AppCompatActivity {
 
     private View decorView;
     private boolean statusbarHidden;
-    private int uiOptions = View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY;
 
     private VideoView videoView;
     private View focusView;
@@ -33,6 +32,8 @@ public class VideoPlayActivity extends AppCompatActivity {
 
     private boolean isPlaying = false;
     private boolean playedBeforeSeek;
+
+    private ShowControllerTask task;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -80,46 +81,57 @@ public class VideoPlayActivity extends AppCompatActivity {
             public void onClick(View v) {
                 if (statusbarHidden){
                     showSystemUI();
-                    statusbarHidden = false;
-                    ShowControllerTask task = new ShowControllerTask();
+                    task = new ShowControllerTask();
                     task.execute();
                 }
                 else{
+                    task.cancel(false);
                     hideSystemUI();
-                    statusbarHidden = true;
                 }
             }
         });
         playButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                task.cancel(false);
                 pauseButton.setVisibility(View.VISIBLE);
                 playButton.setVisibility(View.GONE);
                 videoView.start();
                 isPlaying = true;
                 new SeekBarThread().start();
+                task = new ShowControllerTask();
+                task.execute();
             }
         });
         pauseButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                task.cancel(false);
                 playButton.setVisibility(View.VISIBLE);
                 pauseButton.setVisibility(View.GONE);
                 videoView.pause();
                 isPlaying = false;
+                task = new ShowControllerTask();
+                task.execute();
             }
         });
         playButton.setVisibility(View.GONE);
         previousButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                task.cancel(false);
                 videoSkipNext();
+                task = new ShowControllerTask();
+                task.execute();
             }
         });
         nextButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                task.cancel(false);
                 videoSkipPrevious();
+                task = new ShowControllerTask();
+                task.execute();
             }
         });
         seekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
@@ -129,9 +141,12 @@ public class VideoPlayActivity extends AppCompatActivity {
                     videoView.start();
                     isPlaying = true;
                     new SeekBarThread().start();
+                    task = new ShowControllerTask();
+                    task.execute();
                 }
             }
             public void onStartTrackingTouch(SeekBar seekBar) {
+                task.cancel(false);
                 videoView.pause();
                 playedBeforeSeek = isPlaying;
                 isPlaying = false;
@@ -142,8 +157,7 @@ public class VideoPlayActivity extends AppCompatActivity {
 
         decorView = getWindow().getDecorView();
         showSystemUI();
-        statusbarHidden = false;
-        ShowControllerTask task = new ShowControllerTask();
+        task = new ShowControllerTask();
         task.execute();
     }
 
@@ -174,6 +188,7 @@ public class VideoPlayActivity extends AppCompatActivity {
                         | View.SYSTEM_UI_FLAG_FULLSCREEN // hide status bar
                         | View.SYSTEM_UI_FLAG_IMMERSIVE);
         controller.setVisibility(View.GONE);
+        statusbarHidden = true;
     }
     private void showSystemUI() {
         decorView.setSystemUiVisibility(
@@ -181,6 +196,7 @@ public class VideoPlayActivity extends AppCompatActivity {
                         | View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
                         | View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN);
         controller.setVisibility(View.VISIBLE);
+        statusbarHidden = false;
     }
 
     @Override
@@ -222,7 +238,6 @@ public class VideoPlayActivity extends AppCompatActivity {
         public void onPostExecute(Void result) {
             super.onPostExecute(result);
             hideSystemUI();
-            statusbarHidden = true;
         }
     }
 }
