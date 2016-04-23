@@ -1,5 +1,6 @@
 package com.example.taegyeong.simplemediaplayer;
 
+import android.content.pm.ActivityInfo;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Matrix;
@@ -29,6 +30,7 @@ public class ImagePlayActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_image_play);
+        setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
 
         SectionsPagerAdapter mSectionsPagerAdapter = new SectionsPagerAdapter(getSupportFragmentManager(), getIntent().getStringArrayListExtra("fileList"));
         ViewPager mViewPager = (ViewPager) findViewById(R.id.image_pager);
@@ -87,20 +89,21 @@ public class ImagePlayActivity extends AppCompatActivity {
         public Bitmap setImageView() throws IOException {
             Bitmap stampPhoto, rotatedStampPhoto, scaledRotatedStampPhoto;
             stampPhoto = BitmapFactory.decodeFile(filePath);
-            ExifInterface exif = new ExifInterface(filePath);
-            String orientString = exif.getAttribute(ExifInterface.TAG_ORIENTATION);
-            int orientation = orientString != null ? Integer.parseInt(orientString) :  ExifInterface.ORIENTATION_NORMAL;
+//            ExifInterface exif = new ExifInterface(filePath);
+//            String orientString = exif.getAttribute(ExifInterface.TAG_ORIENTATION);
+//            int orientation = orientString != null ? Integer.parseInt(orientString) :  ExifInterface.ORIENTATION_NORMAL;
 
-            int rotationAngle = 0;
-            if (orientation == ExifInterface.ORIENTATION_ROTATE_90) rotationAngle = 90;
-            if (orientation == ExifInterface.ORIENTATION_ROTATE_180) rotationAngle = 180;
-            if (orientation == ExifInterface.ORIENTATION_ROTATE_270) rotationAngle = 270;
+//            int rotationAngle = 0;
+//            if (orientation == ExifInterface.ORIENTATION_ROTATE_90) rotationAngle = 90;
+//            if (orientation == ExifInterface.ORIENTATION_ROTATE_180) rotationAngle = 180;
+//            if (orientation == ExifInterface.ORIENTATION_ROTATE_270) rotationAngle = 270;
 
-            Matrix matrix = new Matrix();
-            matrix.postRotate(rotationAngle);
-            rotatedStampPhoto = Bitmap.createBitmap(stampPhoto, 0,
-                    0, stampPhoto.getWidth(), stampPhoto.getHeight(),
-                    matrix, true);
+//            Matrix matrix = new Matrix();
+//            matrix.postRotate(rotationAngle);
+//            rotatedStampPhoto = Bitmap.createBitmap(stampPhoto, 0,
+//                    0, stampPhoto.getWidth(), stampPhoto.getHeight(),
+//                    matrix, true);
+            rotatedStampPhoto = stampPhoto;
 
             if (rotatedStampPhoto.getWidth() > rotatedStampPhoto.getHeight()) {
                 if (rotatedStampPhoto.getHeight() > 500) {

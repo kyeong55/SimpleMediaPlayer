@@ -6,6 +6,7 @@ import android.content.ContentUris;
 import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
+import android.content.pm.ActivityInfo;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -53,9 +54,11 @@ public class MusicPlayActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_music_play);
+        setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
 
         mSectionsPagerAdapter = new SectionsPagerAdapter(getSupportFragmentManager(), getIntent().getStringArrayListExtra("fileList"));
         mViewPager = (ViewPager) findViewById(R.id.music_pager);
+        assert mViewPager != null;
         mViewPager.setAdapter(mSectionsPagerAdapter);
         mViewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
             @Override
@@ -129,10 +132,6 @@ public class MusicPlayActivity extends AppCompatActivity {
         musicPlayIntent.putExtra("fileList", getIntent().getStringArrayListExtra("fileList"));
         musicPlayIntent.putExtra("position", getIntent().getIntExtra("position", -1));
         startService(musicPlayIntent);
-        if (musicConnection == null)
-            Log.d("debugging", "musicConnection null");
-        else
-            Log.d("debugging", "musicConnection not null");
         bindService(musicPlayIntent, musicConnection, Context.BIND_AUTO_CREATE);
         isPlaying = true;
     }
@@ -156,7 +155,6 @@ public class MusicPlayActivity extends AppCompatActivity {
             musicPlayService = ((MusicPlayService.MusicPlayBinder) service).getService();
             seekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
                 public void onStopTrackingTouch(SeekBar seekBar) {
-                    Log.d("debugging","onStopTrackingTouch");
                     musicPlayService.seekTo(seekBar.getProgress());
                     if (playedBeforeSeek) {
                         musicPlayService.musicPlay();
@@ -165,7 +163,6 @@ public class MusicPlayActivity extends AppCompatActivity {
                     }
                 }
                 public void onStartTrackingTouch(SeekBar seekBar) {
-                    Log.d("debugging","onStartTrackingTouch");
                     musicPlayService.musicPause();
                     playedBeforeSeek = isPlaying;
                     isPlaying = false;
@@ -198,11 +195,6 @@ public class MusicPlayActivity extends AppCompatActivity {
         public void run() {
             while(isPlaying) {
                 seekBar.setProgress(musicPlayService.getCurrentPosition());
-//                if(musicPlayService.isChanged()){
-//                    seekBar.setMax(musicPlayService.getDuration());
-//                    seekBar.setProgress(0);
-//                    musicPlayService.notifiedChange();
-//                }
                 try {
                     sleep(100);
                 } catch (InterruptedException e) {
@@ -280,8 +272,6 @@ public class MusicPlayActivity extends AppCompatActivity {
                         title.setText(cur.getString(cur.getColumnIndex(MediaStore.Audio.AudioColumns.TITLE)));
                         artist.setText(cur.getString(cur.getColumnIndex(MediaStore.Audio.AlbumColumns.ARTIST)));
                         albumID = Integer.parseInt(cur.getString(cur.getColumnIndex(MediaStore.Audio.Media.ALBUM_ID)));
-//                    albumArt.setImageBitmap(getArtworkQuick(container.getContext(),albumID, 50, 50));
-//                    albumArt.setImageBitmap(getAlbumArt(container.getContext(),albumID));
                         LoadAlbumTask task = new LoadAlbumTask();
                         task.execute(container.getContext());
                     }
@@ -312,63 +302,6 @@ public class MusicPlayActivity extends AppCompatActivity {
             return artwork;
         }
 
-//        private Bitmap getArtworkQuick(Context context, int album_id, int w, int h) {
-//            // NOTE: There is in fact a 1 pixel frame in the ImageView used to
-//            // display this drawable. Take it into account now, so we don't have to
-//            // scale later.
-//            w -= 2;
-//            h -= 2;
-//            Uri artworkUri = Uri.parse("content://media/external/audio/albumart");
-//            BitmapFactory.Options sBitmapOptionsCache = new BitmapFactory.Options();
-//            ContentResolver res = context.getContentResolver();
-//            Uri uri = ContentUris.withAppendedId(artworkUri, album_id);
-//            if (uri != null) {
-//                Log.d("debugging", "uri exist");
-//                ParcelFileDescriptor fd = null;
-//                try {
-//                    fd = res.openFileDescriptor(uri, "r");
-//                    int sampleSize = 1;
-//
-//                    // Compute the closest power-of-two scale factor
-//                    // and pass that to sBitmapOptionsCache.inSampleSize, which will
-//                    // result in faster decoding and better quality
-//                    sBitmapOptionsCache.inJustDecodeBounds = true;
-//                    BitmapFactory.decodeFileDescriptor(
-//                            fd.getFileDescriptor(), null, sBitmapOptionsCache);
-//                    int nextWidth = sBitmapOptionsCache.outWidth >> 1;
-//                    int nextHeight = sBitmapOptionsCache.outHeight >> 1;
-//                    while (nextWidth>w && nextHeight>h) {
-//                        sampleSize <<= 1;
-//                        nextWidth >>= 1;
-//                        nextHeight >>= 1;
-//                    }
-//
-//                    sBitmapOptionsCache.inSampleSize = sampleSize;
-//                    sBitmapOptionsCache.inJustDecodeBounds = false;
-//                    Bitmap b = BitmapFactory.decodeFileDescriptor(
-//                            fd.getFileDescriptor(), null, sBitmapOptionsCache);
-//
-//                    if (b != null) {
-//                        // finally rescale to exactly the size we need
-//                        if (sBitmapOptionsCache.outWidth != w || sBitmapOptionsCache.outHeight != h) {
-//                            Bitmap tmp = Bitmap.createScaledBitmap(b, w, h, true);
-//                            b.recycle();
-//                            b = tmp;
-//                        }
-//                    }
-//
-//                    return b;
-//                } catch (FileNotFoundException e) {
-//                } finally {
-//                    try {
-//                        if (fd != null)
-//                            fd.close();
-//                    } catch (IOException e) {
-//                    }
-//                }
-//            }
-//            return null;
-//        }
         public class LoadAlbumTask extends AsyncTask<Context, Void, Bitmap> {
             @Override
             public Bitmap doInBackground(Context... params) {

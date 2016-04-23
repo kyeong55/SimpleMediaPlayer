@@ -39,6 +39,14 @@
             android:layout_height="match_parent"
             android:orientation="horizontal"
             android:gravity="center_horizontal">
+            <TextView
+                android:id="@+id/video_current"
+                android:gravity="left"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:textColor="@color/colorWhite"
+                android:paddingLeft="16dp"/>
             <ImageView
                 android:id="@+id/video_previous"
                 android:src="@drawable/ic_skip_previous_black_24dp"
@@ -66,6 +74,14 @@
                 android:padding="@dimen/video_button_padding"
                 android:layout_width="@dimen/video_button_size"
                 android:layout_height="@dimen/video_button_size" />
+            <TextView
+                android:id="@+id/video_duration"
+                android:gravity="right"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:textColor="@color/colorWhite"
+                android:paddingRight="16dp"/>
         </LinearLayout>
     </LinearLayout>
 </RelativeLayout>

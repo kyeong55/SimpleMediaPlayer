@@ -1,6 +1,7 @@
 package com.example.taegyeong.simplemediaplayer;
 
 import android.content.Context;
+import android.content.pm.ActivityInfo;
 import android.media.MediaPlayer;
 import android.os.AsyncTask;
 import android.support.v7.app.AppCompatActivity;
@@ -9,9 +10,15 @@ import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.SeekBar;
+import android.widget.TextView;
 import android.widget.VideoView;
 
+import org.w3c.dom.Text;
+
+import java.text.Format;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 
 public class VideoPlayActivity extends AppCompatActivity {
 
@@ -29,17 +36,20 @@ public class VideoPlayActivity extends AppCompatActivity {
     private ImageView nextButton;
     private ImageView previousButton;
     private SeekBar seekBar;
+    private TextView currentTime;
+    private TextView durationTime;
 
     private boolean isPlaying = false;
     private boolean playedBeforeSeek;
 
     private ShowControllerTask task;
+    private SimpleDateFormat simpleTimeFormat;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-//        getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
         setContentView(R.layout.activity_video_play);
+        setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
 
         position = getIntent().getIntExtra("position", -1);
         fileList = getIntent().getStringArrayListExtra("fileList");
@@ -52,6 +62,9 @@ public class VideoPlayActivity extends AppCompatActivity {
         nextButton = (ImageView) findViewById(R.id.video_next);
         previousButton = (ImageView) findViewById(R.id.video_previous);
         seekBar = (SeekBar) findViewById(R.id.video_seekbar);
+        currentTime = (TextView) findViewById(R.id.video_current);
+        durationTime = (TextView) findViewById(R.id.video_duration);
+        simpleTimeFormat = new SimpleDateFormat("mm:ss");
 
         assert videoView != null;
         assert focusView != null;
@@ -61,6 +74,9 @@ public class VideoPlayActivity extends AppCompatActivity {
         assert previousButton != null;
         assert seekBar != null;
 
+        currentTime.setTypeface(SMPCustom.branRegular);
+        durationTime.setTypeface(SMPCustom.branRegular);
+
         videoView.setVideoPath(fileList.get(position));
         videoView.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
             @Override
@@ -68,12 +84,16 @@ public class VideoPlayActivity extends AppCompatActivity {
                 videoView.start();
                 isPlaying = true;
                 seekBar.setMax(videoView.getDuration());
+                durationTime.setText(getTimeString(videoView.getDuration()));
                 new SeekBarThread().start();
             }
         });
         videoView.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
             public void onCompletion(MediaPlayer mp) {
+                task.cancel(false);
                 videoSkipNext();
+                task = new ShowControllerTask();
+                task.execute();
             }
         });
         focusView.setOnClickListener(new View.OnClickListener() {
@@ -120,7 +140,7 @@ public class VideoPlayActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 task.cancel(false);
-                videoSkipNext();
+                videoSkipPrevious();
                 task = new ShowControllerTask();
                 task.execute();
             }
@@ -129,7 +149,7 @@ public class VideoPlayActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 task.cancel(false);
-                videoSkipPrevious();
+                videoSkipNext();
                 task = new ShowControllerTask();
                 task.execute();
             }
@@ -152,6 +172,7 @@ public class VideoPlayActivity extends AppCompatActivity {
                 isPlaying = false;
             }
             public void onProgressChanged(SeekBar seekBar,int progress,boolean fromUser) {
+                currentTime.setText(getTimeString(progress));
             }
         });
 
@@ -162,11 +183,13 @@ public class VideoPlayActivity extends AppCompatActivity {
     }
 
     public void videoSkipNext(){
+        Log.d("debugging","From: "+position);
         if (position < fileList.size() - 1)
             position++;
         else
             position = 0;
         videoView.setVideoPath(fileList.get(position));
+        Log.d("debugging","Next: "+position);
     }
     public void videoSkipPrevious(){
         if (position == 0)
@@ -199,6 +222,14 @@ public class VideoPlayActivity extends AppCompatActivity {
         statusbarHidden = false;
     }
 
+    private String getTimeString(int millisec) {
+        String timeString=simpleTimeFormat.format(new Date(millisec));
+        if (millisec >= 60*60*1000) {
+            timeString = (int)(millisec/(60*60*1000)) + timeString;
+        }
+        return timeString;
+    }
+
     @Override
     protected void onStart() {
         super.onStart();
@@ -215,7 +246,7 @@ public class VideoPlayActivity extends AppCompatActivity {
             while(isPlaying) {
                 seekBar.setProgress(videoView.getCurrentPosition());
                 try {
-                    sleep(100);
+                    sleep(10);
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }

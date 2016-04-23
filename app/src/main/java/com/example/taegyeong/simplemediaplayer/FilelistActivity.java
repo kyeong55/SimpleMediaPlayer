@@ -1,5 +1,6 @@
 package com.example.taegyeong.simplemediaplayer;
 
+import android.content.pm.ActivityInfo;
 import android.graphics.Typeface;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -28,6 +29,7 @@ public class FileListActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_filelist);
+        setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
 
         pageLoading = findViewById(R.id.main_loading_page);
         pageSelect = findViewById(R.id.main_select_page);

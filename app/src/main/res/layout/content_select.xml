@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!--TODO tools:context=".FileListActivity"
-tools:showIn="@layout/activity_filelist"-->
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:orientation="vertical" android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/colorWhiteGray"
-    android:gravity="center_horizontal">
+    android:gravity="center_horizontal"
+    tools:context=".FileListActivity"
+    tools:showIn="@layout/activity_filelist">
     <TextView
         android:id="@+id/select_title"
         android:layout_width="match_parent"
