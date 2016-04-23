@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:context=".MusicPlayActivity"
+    tools:showIn="@layout/activity_music_play"
+    android:orientation="horizontal" android:layout_width="match_parent"
+    android:layout_height="70dp"
+    android:padding="16dp"
+    android:layout_margin="16dp"
+    android:background="@drawable/select_button_background"
+    android:elevation="8dp">
+    <ImageView
+        android:layout_width="60dp"
+        android:layout_height="match_parent"
+        android:src="@drawable/ic_volume_up_black_24dp"
+        android:tint="@color/colorTheme3"/>
+    <SeekBar
+        android:id="@+id/volume_seekbar"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
+</LinearLayout>

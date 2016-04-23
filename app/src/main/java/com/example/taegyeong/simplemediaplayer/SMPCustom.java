@@ -2,6 +2,9 @@ package com.example.taegyeong.simplemediaplayer;
 
 import android.graphics.Typeface;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
+
 /**
  * Created by taegyeong on 16. 4. 21..
  */
@@ -68,4 +71,14 @@ public class SMPCustom {
     public static Typeface branBold;
     public static Typeface branRegular;
     public static Typeface branLight;
+
+    private static SimpleDateFormat simpleTimeFormat = new SimpleDateFormat("mm:ss");
+
+    public static String getTimeString(int millisec) {
+        String timeString = simpleTimeFormat.format(new Date(millisec));
+        if (millisec >= 60*60*1000) {
+            timeString = (int)(millisec/(60*60*1000)) + timeString;
+        }
+        return timeString;
+    }
 }

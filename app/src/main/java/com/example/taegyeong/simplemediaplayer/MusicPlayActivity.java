@@ -10,11 +10,11 @@ import android.content.pm.ActivityInfo;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.IBinder;
-import android.os.ParcelFileDescriptor;
 import android.provider.MediaStore;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
@@ -22,7 +22,6 @@ import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -32,7 +31,6 @@ import android.widget.TextView;
 
 import java.io.File;
 import java.io.FileNotFoundException;
-import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 
@@ -44,9 +42,15 @@ public class MusicPlayActivity extends AppCompatActivity {
     private boolean playedBeforeSeek;
 
     private SeekBar seekBar;
+    private TextView currentTime;
+    private TextView durationTime;
+    private View volumeControl;
 
-    private SectionsPagerAdapter mSectionsPagerAdapter;
     private ViewPager mViewPager;
+
+    private AudioManager audioManager;
+    private ShowVolumeControllerTask volumeTask;
+    private boolean isVolumeShowing;
 
     private boolean loaded = false;
 
@@ -56,9 +60,35 @@ public class MusicPlayActivity extends AppCompatActivity {
         setContentView(R.layout.activity_music_play);
         setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
 
-        mSectionsPagerAdapter = new SectionsPagerAdapter(getSupportFragmentManager(), getIntent().getStringArrayListExtra("fileList"));
         mViewPager = (ViewPager) findViewById(R.id.music_pager);
+
+        final ImageView playButton = (ImageView) findViewById(R.id.music_play);
+        final ImageView pauseButton = (ImageView) findViewById(R.id.music_pause);
+        ImageView nextButton = (ImageView) findViewById(R.id.music_next);
+        ImageView previousButton = (ImageView) findViewById(R.id.music_previous);
+        seekBar = (SeekBar) findViewById(R.id.music_seekbar);
+        currentTime = (TextView) findViewById(R.id.music_current);
+        durationTime = (TextView) findViewById(R.id.music_duration);
+        final ImageView volumeButton = (ImageView) findViewById(R.id.music_volume_button);
+        volumeControl = findViewById(R.id.music_volume_control);
+        SeekBar volumeSeekbar = (SeekBar) findViewById(R.id.volume_seekbar);
+
         assert mViewPager != null;
+        assert playButton != null;
+        assert pauseButton != null;
+        assert nextButton != null;
+        assert previousButton != null;
+        assert seekBar != null;
+        assert currentTime != null;
+        assert durationTime != null;
+        assert volumeButton != null;
+        assert volumeControl != null;
+        assert volumeSeekbar != null;
+
+        currentTime.setTypeface(SMPCustom.branRegular);
+        durationTime.setTypeface(SMPCustom.branRegular);
+
+        SectionsPagerAdapter mSectionsPagerAdapter = new SectionsPagerAdapter(getSupportFragmentManager(), getIntent().getStringArrayListExtra("fileList"));
         mViewPager.setAdapter(mSectionsPagerAdapter);
         mViewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
             @Override
@@ -66,6 +96,7 @@ public class MusicPlayActivity extends AppCompatActivity {
                 if(loaded) {
                     musicPlayService.skipTo(position);
                     seekBar.setMax(musicPlayService.getDuration());
+                    durationTime.setText(SMPCustom.getTimeString(musicPlayService.getDuration()));
                 }
             }
 
@@ -78,18 +109,6 @@ public class MusicPlayActivity extends AppCompatActivity {
             }
         });
         mViewPager.setCurrentItem(getIntent().getIntExtra("position", -1));
-
-        final ImageView playButton = (ImageView) findViewById(R.id.music_play);
-        final ImageView pauseButton = (ImageView) findViewById(R.id.music_pause);
-        ImageView nextButton = (ImageView) findViewById(R.id.music_next);
-        ImageView previousButton = (ImageView) findViewById(R.id.music_previous);
-        seekBar = (SeekBar) findViewById(R.id.music_seekbar);
-
-        assert playButton != null;
-        assert pauseButton != null;
-        assert nextButton != null;
-        assert previousButton != null;
-        assert seekBar != null;
 
         playButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -123,6 +142,44 @@ public class MusicPlayActivity extends AppCompatActivity {
                 setUp(musicPlayService.nextPosition());
             }
         });
+
+        audioManager = (AudioManager) getSystemService(AUDIO_SERVICE);
+        volumeSeekbar.setMax(audioManager.getStreamMaxVolume(AudioManager.STREAM_MUSIC));
+        volumeSeekbar.setProgress(audioManager.getStreamVolume(AudioManager.STREAM_MUSIC));
+        volumeSeekbar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+            @Override
+            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+                audioManager.setStreamVolume(AudioManager.STREAM_MUSIC, progress, 0);
+            }
+            @Override
+            public void onStartTrackingTouch(SeekBar seekBar) {
+                volumeTask.cancel(false);
+            }
+            @Override
+            public void onStopTrackingTouch(SeekBar seekBar) {
+                volumeTask = new ShowVolumeControllerTask();
+                volumeTask.execute();
+            }
+        });
+        volumeControl.setVisibility(View.GONE);
+        isVolumeShowing = false;
+        volumeButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (isVolumeShowing) {
+                    isVolumeShowing = false;
+                    volumeTask.cancel(false);
+                    volumeControl.setVisibility(View.GONE);
+                }
+                else {
+                    isVolumeShowing = true;
+                    volumeTask = new ShowVolumeControllerTask();
+                    volumeTask.execute();
+                    volumeControl.setVisibility(View.VISIBLE);
+                }
+            }
+        });
+
     }
 
     @Override
@@ -168,6 +225,7 @@ public class MusicPlayActivity extends AppCompatActivity {
                     isPlaying = false;
                 }
                 public void onProgressChanged(SeekBar seekBar,int progress,boolean fromUser) {
+                    currentTime.setText(SMPCustom.getTimeString(progress));
                 }
             });
             musicPlayService.mediaPlayer.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
@@ -182,6 +240,7 @@ public class MusicPlayActivity extends AppCompatActivity {
             new SeekBarThread().start();
             setUp(musicPlayService.getPosition());
             seekBar.setMax(musicPlayService.getDuration());
+            durationTime.setText(SMPCustom.getTimeString(musicPlayService.getDuration()));
         }
 
         @Override
@@ -201,6 +260,24 @@ public class MusicPlayActivity extends AppCompatActivity {
                     e.printStackTrace();
                 }
             }
+        }
+    }
+    public class ShowVolumeControllerTask extends AsyncTask<Void, Void, Void> {
+        @Override
+        public Void doInBackground(Void... params) {
+            try {
+                Thread.sleep(4000);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+            return null;
+        }
+
+        @Override
+        public void onPostExecute(Void result) {
+            super.onPostExecute(result);
+            isVolumeShowing = false;
+            volumeControl.setVisibility(View.GONE);
         }
     }
 
@@ -298,8 +375,7 @@ public class MusicPlayActivity extends AppCompatActivity {
             } catch (FileNotFoundException e) {
                 e.printStackTrace();
             }
-            Bitmap artwork = BitmapFactory.decodeStream(in);
-            return artwork;
+            return BitmapFactory.decodeStream(in);
         }
 
         public class LoadAlbumTask extends AsyncTask<Context, Void, Bitmap> {

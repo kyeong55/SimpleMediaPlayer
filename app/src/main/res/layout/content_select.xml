@@ -171,7 +171,7 @@
         android:layout_height="36dp"
         android:gravity="center"
         android:textColor="@color/colorWhite"
-        android:textSize="16dp"
+        android:textSize="20sp"
         android:background="@drawable/select_button_title_background"
         android:backgroundTint="@color/colorText"
         android:text="RESCAN FILES" />

@@ -1,6 +1,5 @@
 package com.example.taegyeong.simplemediaplayer;
 
-import android.content.Context;
 import android.content.pm.ActivityInfo;
 import android.media.MediaPlayer;
 import android.os.AsyncTask;
@@ -12,13 +11,7 @@ import android.widget.ImageView;
 import android.widget.SeekBar;
 import android.widget.TextView;
 import android.widget.VideoView;
-
-import org.w3c.dom.Text;
-
-import java.text.Format;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Date;
 
 public class VideoPlayActivity extends AppCompatActivity {
 
@@ -29,12 +22,9 @@ public class VideoPlayActivity extends AppCompatActivity {
     private boolean statusbarHidden;
 
     private VideoView videoView;
-    private View focusView;
     private View controller;
     private ImageView playButton;
     private ImageView pauseButton;
-    private ImageView nextButton;
-    private ImageView previousButton;
     private SeekBar seekBar;
     private TextView currentTime;
     private TextView durationTime;
@@ -43,7 +33,6 @@ public class VideoPlayActivity extends AppCompatActivity {
     private boolean playedBeforeSeek;
 
     private ShowControllerTask task;
-    private SimpleDateFormat simpleTimeFormat;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -55,16 +44,15 @@ public class VideoPlayActivity extends AppCompatActivity {
         fileList = getIntent().getStringArrayListExtra("fileList");
 
         videoView = (VideoView) findViewById(R.id.video_view);
-        focusView = findViewById(R.id.video_focus);
+        View focusView = findViewById(R.id.video_focus);
         controller = findViewById(R.id.video_controller);
         playButton = (ImageView) findViewById(R.id.video_play);
         pauseButton = (ImageView) findViewById(R.id.video_pause);
-        nextButton = (ImageView) findViewById(R.id.video_next);
-        previousButton = (ImageView) findViewById(R.id.video_previous);
+        ImageView nextButton = (ImageView) findViewById(R.id.video_next);
+        ImageView previousButton = (ImageView) findViewById(R.id.video_previous);
         seekBar = (SeekBar) findViewById(R.id.video_seekbar);
         currentTime = (TextView) findViewById(R.id.video_current);
         durationTime = (TextView) findViewById(R.id.video_duration);
-        simpleTimeFormat = new SimpleDateFormat("mm:ss");
 
         assert videoView != null;
         assert focusView != null;
@@ -84,7 +72,7 @@ public class VideoPlayActivity extends AppCompatActivity {
                 videoView.start();
                 isPlaying = true;
                 seekBar.setMax(videoView.getDuration());
-                durationTime.setText(getTimeString(videoView.getDuration()));
+                durationTime.setText(SMPCustom.getTimeString(videoView.getDuration()));
                 new SeekBarThread().start();
             }
         });
@@ -172,7 +160,7 @@ public class VideoPlayActivity extends AppCompatActivity {
                 isPlaying = false;
             }
             public void onProgressChanged(SeekBar seekBar,int progress,boolean fromUser) {
-                currentTime.setText(getTimeString(progress));
+                currentTime.setText(SMPCustom.getTimeString(progress));
             }
         });
 
@@ -220,14 +208,6 @@ public class VideoPlayActivity extends AppCompatActivity {
                         | View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN);
         controller.setVisibility(View.VISIBLE);
         statusbarHidden = false;
-    }
-
-    private String getTimeString(int millisec) {
-        String timeString=simpleTimeFormat.format(new Date(millisec));
-        if (millisec >= 60*60*1000) {
-            timeString = (int)(millisec/(60*60*1000)) + timeString;
-        }
-        return timeString;
     }
 
     @Override
