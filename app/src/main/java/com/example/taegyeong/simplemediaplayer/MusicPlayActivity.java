@@ -22,6 +22,7 @@ import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -44,13 +45,10 @@ public class MusicPlayActivity extends AppCompatActivity {
     private SeekBar seekBar;
     private TextView currentTime;
     private TextView durationTime;
-    private View volumeControl;
 
     private ViewPager mViewPager;
 
     private AudioManager audioManager;
-    private ShowVolumeControllerTask volumeTask;
-    private boolean isVolumeShowing;
 
     private boolean loaded = false;
 
@@ -70,8 +68,6 @@ public class MusicPlayActivity extends AppCompatActivity {
         currentTime = (TextView) findViewById(R.id.music_current);
         durationTime = (TextView) findViewById(R.id.music_duration);
         final ImageView volumeButton = (ImageView) findViewById(R.id.music_volume_button);
-        volumeControl = findViewById(R.id.music_volume_control);
-        SeekBar volumeSeekbar = (SeekBar) findViewById(R.id.volume_seekbar);
 
         assert mViewPager != null;
         assert playButton != null;
@@ -82,8 +78,6 @@ public class MusicPlayActivity extends AppCompatActivity {
         assert currentTime != null;
         assert durationTime != null;
         assert volumeButton != null;
-        assert volumeControl != null;
-        assert volumeSeekbar != null;
 
         currentTime.setTypeface(SMPCustom.branRegular);
         durationTime.setTypeface(SMPCustom.branRegular);
@@ -94,7 +88,13 @@ public class MusicPlayActivity extends AppCompatActivity {
             @Override
             public void onPageSelected(int position) {
                 if(loaded) {
+                    pauseButton.setVisibility(View.VISIBLE);
+                    playButton.setVisibility(View.GONE);
                     musicPlayService.skipTo(position);
+                    if (!isPlaying) {
+                        isPlaying = true;
+                        new SeekBarThread().start();
+                    }
                     seekBar.setMax(musicPlayService.getDuration());
                     durationTime.setText(SMPCustom.getTimeString(musicPlayService.getDuration()));
                 }
@@ -144,39 +144,11 @@ public class MusicPlayActivity extends AppCompatActivity {
         });
 
         audioManager = (AudioManager) getSystemService(AUDIO_SERVICE);
-        volumeSeekbar.setMax(audioManager.getStreamMaxVolume(AudioManager.STREAM_MUSIC));
-        volumeSeekbar.setProgress(audioManager.getStreamVolume(AudioManager.STREAM_MUSIC));
-        volumeSeekbar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
-            @Override
-            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
-                audioManager.setStreamVolume(AudioManager.STREAM_MUSIC, progress, 0);
-            }
-            @Override
-            public void onStartTrackingTouch(SeekBar seekBar) {
-                volumeTask.cancel(false);
-            }
-            @Override
-            public void onStopTrackingTouch(SeekBar seekBar) {
-                volumeTask = new ShowVolumeControllerTask();
-                volumeTask.execute();
-            }
-        });
-        volumeControl.setVisibility(View.GONE);
-        isVolumeShowing = false;
         volumeButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (isVolumeShowing) {
-                    isVolumeShowing = false;
-                    volumeTask.cancel(false);
-                    volumeControl.setVisibility(View.GONE);
-                }
-                else {
-                    isVolumeShowing = true;
-                    volumeTask = new ShowVolumeControllerTask();
-                    volumeTask.execute();
-                    volumeControl.setVisibility(View.VISIBLE);
-                }
+                audioManager.adjustStreamVolume(AudioManager.STREAM_MUSIC,
+                        AudioManager.ADJUST_SAME,AudioManager.FLAG_SHOW_UI);
             }
         });
 
@@ -202,6 +174,42 @@ public class MusicPlayActivity extends AppCompatActivity {
         unbindService(musicConnection);
         isPlaying = false;
         super.onStop();
+    }
+
+    @Override
+    public boolean onKeyDown(int keyCode, KeyEvent event) {
+        switch (keyCode) {
+            case KeyEvent.KEYCODE_VOLUME_UP :
+                audioManager.adjustStreamVolume(AudioManager.STREAM_MUSIC,
+                        AudioManager.ADJUST_RAISE, AudioManager.FLAG_SHOW_UI);
+                return true;
+            case KeyEvent.KEYCODE_VOLUME_DOWN:
+                audioManager.adjustStreamVolume(AudioManager.STREAM_MUSIC,
+                        AudioManager.ADJUST_LOWER, AudioManager.FLAG_SHOW_UI);
+                return true;
+            case KeyEvent.KEYCODE_BACK:
+                return true;
+        }
+
+        return false;
+    }
+
+    @Override
+    public boolean onKeyUp(int keyCode, KeyEvent event) {
+        switch (keyCode) {
+            case KeyEvent.KEYCODE_VOLUME_UP :
+                audioManager.adjustStreamVolume(AudioManager.STREAM_MUSIC,
+                        AudioManager.ADJUST_SAME, AudioManager.FLAG_SHOW_UI);
+                return true;
+            case KeyEvent.KEYCODE_VOLUME_DOWN:
+                audioManager.adjustStreamVolume(AudioManager.STREAM_MUSIC,
+                        AudioManager.ADJUST_SAME, AudioManager.FLAG_SHOW_UI);
+                return true;
+            case KeyEvent.KEYCODE_BACK:
+                this.finish();
+                return true;
+        }
+        return false;
     }
 
     private ServiceConnection musicConnection = new ServiceConnection() {
@@ -260,24 +268,6 @@ public class MusicPlayActivity extends AppCompatActivity {
                     e.printStackTrace();
                 }
             }
-        }
-    }
-    public class ShowVolumeControllerTask extends AsyncTask<Void, Void, Void> {
-        @Override
-        public Void doInBackground(Void... params) {
-            try {
-                Thread.sleep(4000);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
-            return null;
-        }
-
-        @Override
-        public void onPostExecute(Void result) {
-            super.onPostExecute(result);
-            isVolumeShowing = false;
-            volumeControl.setVisibility(View.GONE);
         }
     }
 
