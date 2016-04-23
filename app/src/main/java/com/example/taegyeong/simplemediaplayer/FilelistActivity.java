@@ -18,6 +18,10 @@ public class FileListActivity extends AppCompatActivity {
     private TextView fileListLocation;
     private FileListAdapter fileListAdapter;
 
+    private TextView selectImageDetail;
+    private TextView selectMusicDetail;
+    private TextView selectVideoDetail;
+
     private FileTracker fileTracker;
 
     @Override
@@ -32,13 +36,18 @@ public class FileListActivity extends AppCompatActivity {
         TextView loadingTitle2 = (TextView) findViewById(R.id.loading_title2);
         TextView loadingDetail = (TextView) findViewById(R.id.loading_detail);
 
-        TextView selectTitle1 = (TextView) findViewById(R.id.select_title);
+        TextView selectTitle = (TextView) findViewById(R.id.select_title);
+        TextView selectDetail = (TextView) findViewById(R.id.select_detail);
         View selectImageButton = findViewById(R.id.select_image_button);
-        View selectMusicButton = findViewById(R.id.select_image_button);
-        View selectVideoButton = findViewById(R.id.select_image_button);
+        View selectMusicButton = findViewById(R.id.select_music_button);
+        View selectVideoButton = findViewById(R.id.select_video_button);
         TextView selectImageTitle = (TextView) findViewById(R.id.select_image_title);
         TextView selectMusicTitle = (TextView) findViewById(R.id.select_music_title);
         TextView selectVideoTitle = (TextView) findViewById(R.id.select_video_title);
+        selectImageDetail = (TextView) findViewById(R.id.select_image_detail);
+        selectMusicDetail = (TextView) findViewById(R.id.select_music_detail);
+        selectVideoDetail = (TextView) findViewById(R.id.select_video_detail);
+        TextView selectRescanButton = (TextView) findViewById(R.id.select_rescan_button);
 
         fileListTitle = (TextView) findViewById(R.id.filelist_title);
         fileListLocation = (TextView) findViewById(R.id.filelist_location);
@@ -48,13 +57,18 @@ public class FileListActivity extends AppCompatActivity {
         assert loadingTitle1 != null;
         assert loadingTitle2 != null;
         assert loadingDetail != null;
-        assert selectTitle1 != null;
+        assert selectTitle != null;
+        assert selectDetail != null;
         assert selectImageButton != null;
         assert selectMusicButton != null;
         assert selectVideoButton != null;
         assert selectImageTitle != null;
         assert selectMusicTitle != null;
         assert selectVideoTitle != null;
+        assert selectImageDetail != null;
+        assert selectMusicDetail != null;
+        assert selectVideoDetail != null;
+        assert selectRescanButton != null;
         assert fileListTitle != null;
         assert fileListLocation != null;
 
@@ -62,20 +76,25 @@ public class FileListActivity extends AppCompatActivity {
         SMPCustom.branBold = Typeface.createFromAsset(getAssets(), "brandon_bld.otf");
         SMPCustom.branRegular = Typeface.createFromAsset(getAssets(), "brandon_med.otf");
         SMPCustom.branLight = Typeface.createFromAsset(getAssets(), "brandon_reg.otf");
-        fileListTitle.setTypeface(SMPCustom.branBold);
-        fileListLocation.setTypeface(SMPCustom.branRegular);
 
         loadingTitle1.setTypeface(SMPCustom.branLight);
         loadingTitle2.setTypeface(SMPCustom.branBold);
         loadingDetail.setTypeface(SMPCustom.branRegular);
 
-        selectTitle1.setTypeface(SMPCustom.branBold);
-        selectImageTitle.setTypeface(SMPCustom.branBold);
-        selectMusicTitle.setTypeface(SMPCustom.branBold);
-        selectVideoTitle.setTypeface(SMPCustom.branBold);
+        selectTitle.setTypeface(SMPCustom.branBold);
+        selectDetail.setTypeface(SMPCustom.branRegular);
+        selectImageTitle.setTypeface(SMPCustom.branRegular);
+        selectMusicTitle.setTypeface(SMPCustom.branRegular);
+        selectVideoTitle.setTypeface(SMPCustom.branRegular);
+        selectImageDetail.setTypeface(SMPCustom.branRegular);
+        selectMusicDetail.setTypeface(SMPCustom.branRegular);
+        selectVideoDetail.setTypeface(SMPCustom.branRegular);
+        selectRescanButton.setTypeface(SMPCustom.branBold);
 
-        ScanTask task = new ScanTask();
-        task.execute();
+        fileListTitle.setTypeface(SMPCustom.branBold);
+        fileListLocation.setTypeface(SMPCustom.branRegular);
+
+        selectDetail.setText("Scanned files in "+SMPCustom.root);
 
         selectImageButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -95,6 +114,15 @@ public class FileListActivity extends AppCompatActivity {
                 selectFileType(SMPCustom.TYPE_VIDEO);
             }
         });
+        selectRescanButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                reScan();
+            }
+        });
+
+        ScanTask task = new ScanTask();
+        task.execute();
     }
 
     @Override
@@ -108,6 +136,14 @@ public class FileListActivity extends AppCompatActivity {
     public void backToSelect(){
         pageSelect.setVisibility(View.VISIBLE);
         fileListAdapter = null;
+    }
+
+    public void reScan(){
+        pageLoading.setVisibility(View.VISIBLE);
+        fileListAdapter = null;
+        fileTracker = null;
+        ScanTask task = new ScanTask();
+        task.execute();
     }
 
     public void selectFileType(int fileType){
@@ -148,6 +184,9 @@ public class FileListActivity extends AppCompatActivity {
         @Override
         public void onPostExecute(Void result) {
             super.onPostExecute(result);
+            selectImageDetail.setText("Total: "+fileTracker.getSubFileNum(SMPCustom.TYPE_IMAGE)+" files");
+            selectMusicDetail.setText("Total: "+fileTracker.getSubFileNum(SMPCustom.TYPE_MUSIC)+" files");
+            selectVideoDetail.setText("Total: "+fileTracker.getSubFileNum(SMPCustom.TYPE_VIDEO)+" files");
             pageLoading.setVisibility(View.GONE);
         }
     }

@@ -9,7 +9,6 @@ import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
-import android.os.AsyncTask;
 import android.provider.MediaStore;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -129,7 +128,7 @@ public class FileListAdapter extends  RecyclerView.Adapter<FileListAdapter.ViewH
                     holder.folder.setVisibility(View.VISIBLE);
                     holder.icon.setVisibility(View.GONE);
                     holder.album.setVisibility(View.GONE);
-                    holder.subtitle.setText(fileTracker.getSubFileNum(position)+" files");
+                    holder.subtitle.setText(fileTracker.getSubDirFileNum(position)+" files");
                     break;
                 default:
                     holder.subtitle.setText("");

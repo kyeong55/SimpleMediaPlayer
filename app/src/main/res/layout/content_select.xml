@@ -5,7 +5,7 @@ tools:showIn="@layout/activity_filelist"-->
     xmlns:tools="http://schemas.android.com/tools"
     android:orientation="vertical" android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/colorWhite"
+    android:background="@color/colorWhiteGray"
     android:gravity="center_horizontal">
     <TextView
         android:id="@+id/select_title"
@@ -18,10 +18,14 @@ tools:showIn="@layout/activity_filelist"-->
         android:textColor="@color/colorWhite"
         android:textSize="@dimen/filelist_title_text_size"
         android:text="SIMPLE MEDIA PLAYER"/>
-    <Space
+    <TextView
+        android:id="@+id/select_detail"
         android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="1" />
+        android:layout_height="wrap_content"
+        android:layout_margin="12dp"
+        android:paddingLeft="8dp"
+        android:textColor="@color/colorText"
+        android:textSize="16sp" />
     <LinearLayout
         android:id="@+id/select_image_button"
         android:layout_width="match_parent"
@@ -29,7 +33,7 @@ tools:showIn="@layout/activity_filelist"-->
         android:layout_marginLeft="@dimen/select_button_margin_side"
         android:layout_marginRight="@dimen/select_button_margin_side"
         android:layout_marginBottom="@dimen/select_button_margin_bottom"
-        android:background="@color/colorWhite"
+        android:background="@drawable/select_button_background"
         android:elevation="@dimen/select_button_elevation"
         android:orientation="horizontal"
         android:gravity="center_vertical">
@@ -39,20 +43,33 @@ tools:showIn="@layout/activity_filelist"-->
             android:layout_margin="@dimen/select_button_icon_margin"
             android:src="@drawable/icon_image"
             android:tint="@color/colorTheme4"/>
-        <TextView
-            android:id="@+id/select_image_title"
-            android:layout_width="@dimen/select_button_title_width"
-            android:layout_height="@dimen/select_button_title_height"
-            android:layout_margin="@dimen/select_button_title_margin"
-            android:gravity="center"
-            android:paddingLeft="16dp"
-            android:paddingRight="16dp"
-            android:singleLine="true"
-            android:ellipsize="start"
-            android:textSize="@dimen/select_button_title_size"
-            android:textColor="@color/colorBlack"
-            android:background="@drawable/select_button_background"
-            android:text="Image Files" />
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+            <TextView
+                android:id="@+id/select_image_title"
+                android:layout_width="@dimen/select_button_title_width"
+                android:layout_height="@dimen/select_button_title_height"
+                android:layout_margin="@dimen/select_button_title_margin"
+                android:gravity="center"
+                android:paddingLeft="16dp"
+                android:paddingRight="16dp"
+                android:singleLine="true"
+                android:ellipsize="start"
+                android:textSize="@dimen/select_button_title_size"
+                android:textColor="@color/colorBlack"
+                android:background="@drawable/select_button_title_background"
+                android:text="Image Files" />
+            <TextView
+                android:id="@+id/select_image_detail"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="36dp"
+                android:layout_marginRight="16dp"
+                android:textSize="18sp"
+                android:textColor="@color/colorText"/>
+        </LinearLayout>
     </LinearLayout>
     <LinearLayout
         android:id="@+id/select_music_button"
@@ -61,7 +78,7 @@ tools:showIn="@layout/activity_filelist"-->
         android:layout_marginLeft="@dimen/select_button_margin_side"
         android:layout_marginRight="@dimen/select_button_margin_side"
         android:layout_marginBottom="@dimen/select_button_margin_bottom"
-        android:background="@color/colorWhite"
+        android:background="@drawable/select_button_background"
         android:elevation="@dimen/select_button_elevation"
         android:orientation="horizontal"
         android:gravity="center_vertical">
@@ -69,22 +86,36 @@ tools:showIn="@layout/activity_filelist"-->
             android:layout_width="@dimen/select_button_icon_size"
             android:layout_height="@dimen/select_button_icon_size"
             android:layout_margin="@dimen/select_button_icon_margin"
-            android:src="@drawable/icon_music"
-            android:tint="@color/colorTheme4"/>
-        <TextView
-            android:id="@+id/select_music_title"
-            android:layout_width="@dimen/select_button_title_width"
-            android:layout_height="@dimen/select_button_title_height"
-            android:layout_margin="@dimen/select_button_title_margin"
-            android:gravity="center"
-            android:paddingLeft="16dp"
-            android:paddingRight="16dp"
-            android:singleLine="true"
-            android:ellipsize="start"
-            android:textSize="@dimen/select_button_title_size"
-            android:textColor="@color/colorBlack"
-            android:background="@drawable/select_button_background"
-            android:text="Music Files" />
+            android:src="@drawable/icon_music_big"
+            android:tint="@color/colorTheme4"
+            android:padding="2dp"/>
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+            <TextView
+                android:id="@+id/select_music_title"
+                android:layout_width="@dimen/select_button_title_width"
+                android:layout_height="@dimen/select_button_title_height"
+                android:layout_margin="@dimen/select_button_title_margin"
+                android:gravity="center"
+                android:paddingLeft="16dp"
+                android:paddingRight="16dp"
+                android:singleLine="true"
+                android:ellipsize="start"
+                android:textSize="@dimen/select_button_title_size"
+                android:textColor="@color/colorBlack"
+                android:background="@drawable/select_button_title_background"
+                android:text="Music Files" />
+            <TextView
+                android:id="@+id/select_music_detail"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="36dp"
+                android:layout_marginRight="16dp"
+                android:textSize="18sp"
+                android:textColor="@color/colorText"/>
+        </LinearLayout>
     </LinearLayout>
     <LinearLayout
         android:id="@+id/select_video_button"
@@ -92,8 +123,7 @@ tools:showIn="@layout/activity_filelist"-->
         android:layout_height="wrap_content"
         android:layout_marginLeft="@dimen/select_button_margin_side"
         android:layout_marginRight="@dimen/select_button_margin_side"
-        android:layout_marginBottom="@dimen/select_button_margin_bottom"
-        android:background="@color/colorWhite"
+        android:background="@drawable/select_button_background"
         android:elevation="@dimen/select_button_elevation"
         android:orientation="horizontal"
         android:gravity="center_vertical">
@@ -101,24 +131,50 @@ tools:showIn="@layout/activity_filelist"-->
             android:layout_width="@dimen/select_button_icon_size"
             android:layout_height="@dimen/select_button_icon_size"
             android:layout_margin="@dimen/select_button_icon_margin"
-            android:src="@drawable/icon_video"
+            android:src="@drawable/icon_video_big"
             android:tint="@color/colorTheme4"/>
-        <TextView
-            android:id="@+id/select_video_title"
-            android:layout_width="@dimen/select_button_title_width"
-            android:layout_height="@dimen/select_button_title_height"
-            android:layout_margin="@dimen/select_button_title_margin"
-            android:gravity="center"
-            android:paddingLeft="16dp"
-            android:paddingRight="16dp"
-            android:singleLine="true"
-            android:ellipsize="start"
-            android:textSize="@dimen/select_button_title_size"
-            android:textColor="@color/colorBlack"
-            android:background="@drawable/select_button_background"
-            android:text="Video Files" />
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+            <TextView
+                android:id="@+id/select_video_title"
+                android:layout_width="@dimen/select_button_title_width"
+                android:layout_height="@dimen/select_button_title_height"
+                android:layout_margin="@dimen/select_button_title_margin"
+                android:gravity="center"
+                android:paddingLeft="16dp"
+                android:paddingRight="16dp"
+                android:singleLine="true"
+                android:ellipsize="start"
+                android:textSize="@dimen/select_button_title_size"
+                android:textColor="@color/colorBlack"
+                android:background="@drawable/select_button_title_background"
+                android:text="Video Files" />
+            <TextView
+                android:id="@+id/select_video_detail"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="36dp"
+                android:layout_marginRight="16dp"
+                android:textSize="18sp"
+                android:textColor="@color/colorText"/>
+        </LinearLayout>
     </LinearLayout>
-
+    <Space
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1" />
+    <TextView
+        android:id="@+id/select_rescan_button"
+        android:layout_width="200dp"
+        android:layout_height="36dp"
+        android:gravity="center"
+        android:textColor="@color/colorWhite"
+        android:textSize="16dp"
+        android:background="@drawable/select_button_title_background"
+        android:backgroundTint="@color/colorText"
+        android:text="RESCAN FILES" />
     <Space
         android:layout_width="match_parent"
         android:layout_height="0dp"

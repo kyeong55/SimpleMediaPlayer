@@ -14,7 +14,7 @@ public class SMPCustom {
 
     // "/storage/external_SD/";
     // "/storage/emulated/0/";
-    public static final String root = "/storage/emulated/0/";
+    public static final String root = "/storage/";
 
     private static final String[] imageFormat = {".jpg"};
     private static final String[] musicFormat = {".mp3"};
