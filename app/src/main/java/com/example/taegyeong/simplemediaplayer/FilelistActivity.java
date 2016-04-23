@@ -32,9 +32,13 @@ public class FileListActivity extends AppCompatActivity {
         TextView loadingTitle2 = (TextView) findViewById(R.id.loading_title2);
         TextView loadingDetail = (TextView) findViewById(R.id.loading_detail);
 
-        Button selectImageButton = (Button) findViewById(R.id.select_image_button);
-        Button selectMusicButton = (Button) findViewById(R.id.select_music_button);
-        Button selectVideoButton = (Button) findViewById(R.id.select_video_button);
+        TextView selectTitle1 = (TextView) findViewById(R.id.select_title);
+        View selectImageButton = findViewById(R.id.select_image_button);
+        View selectMusicButton = findViewById(R.id.select_image_button);
+        View selectVideoButton = findViewById(R.id.select_image_button);
+        TextView selectImageTitle = (TextView) findViewById(R.id.select_image_title);
+        TextView selectMusicTitle = (TextView) findViewById(R.id.select_music_title);
+        TextView selectVideoTitle = (TextView) findViewById(R.id.select_video_title);
 
         fileListTitle = (TextView) findViewById(R.id.filelist_title);
         fileListLocation = (TextView) findViewById(R.id.filelist_location);
@@ -44,9 +48,13 @@ public class FileListActivity extends AppCompatActivity {
         assert loadingTitle1 != null;
         assert loadingTitle2 != null;
         assert loadingDetail != null;
+        assert selectTitle1 != null;
         assert selectImageButton != null;
         assert selectMusicButton != null;
         assert selectVideoButton != null;
+        assert selectImageTitle != null;
+        assert selectMusicTitle != null;
+        assert selectVideoTitle != null;
         assert fileListTitle != null;
         assert fileListLocation != null;
 
@@ -60,6 +68,11 @@ public class FileListActivity extends AppCompatActivity {
         loadingTitle1.setTypeface(SMPCustom.branLight);
         loadingTitle2.setTypeface(SMPCustom.branBold);
         loadingDetail.setTypeface(SMPCustom.branRegular);
+
+        selectTitle1.setTypeface(SMPCustom.branBold);
+        selectImageTitle.setTypeface(SMPCustom.branBold);
+        selectMusicTitle.setTypeface(SMPCustom.branBold);
+        selectVideoTitle.setTypeface(SMPCustom.branBold);
 
         ScanTask task = new ScanTask();
         task.execute();
