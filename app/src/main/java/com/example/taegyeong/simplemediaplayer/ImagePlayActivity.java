@@ -3,9 +3,6 @@ package com.example.taegyeong.simplemediaplayer;
 import android.content.pm.ActivityInfo;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.graphics.Matrix;
-import android.media.ExifInterface;
-import android.net.Uri;
 import android.os.AsyncTask;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
@@ -26,17 +23,37 @@ import java.util.ArrayList;
 
 public class ImagePlayActivity extends AppCompatActivity {
 
+    private TextView title;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_image_play);
         setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
 
-        SectionsPagerAdapter mSectionsPagerAdapter = new SectionsPagerAdapter(getSupportFragmentManager(), getIntent().getStringArrayListExtra("fileList"));
+        title = (TextView) findViewById(R.id.image_title);
+
+        assert title != null;
+
+        title.setTypeface(SMPCustom.branBold);
+
+        final ArrayList<String> fileList = getIntent().getStringArrayListExtra("fileList");
+        SectionsPagerAdapter mSectionsPagerAdapter = new SectionsPagerAdapter(getSupportFragmentManager(), fileList);
         ViewPager mViewPager = (ViewPager) findViewById(R.id.image_pager);
         assert mViewPager != null;
         mViewPager.setAdapter(mSectionsPagerAdapter);
         mViewPager.setCurrentItem(getIntent().getIntExtra("position", -1));
+        title.setText(new File(fileList.get(getIntent().getIntExtra("position", -1))).getName());
+        mViewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
+            @Override
+            public void onPageSelected(int position) {
+                title.setText(new File(fileList.get(position)).getName());
+            }
+            @Override
+            public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {}
+            @Override
+            public void onPageScrollStateChanged(int state) {}
+        });
     }
 
     public class SectionsPagerAdapter extends FragmentPagerAdapter {
@@ -63,7 +80,6 @@ public class ImagePlayActivity extends AppCompatActivity {
 
         private String filePath;
         ImageView imageView;
-        TextView title;
         ProgressBar progressBar;
 
         public ImageViewFragment(String filePath) {
@@ -75,10 +91,7 @@ public class ImagePlayActivity extends AppCompatActivity {
                                  Bundle savedInstanceState) {
             View rootView = inflater.inflate(R.layout.fragment_image_play, container, false);
             imageView = (ImageView) rootView.findViewById(R.id.image_view);
-            title = (TextView) rootView.findViewById(R.id.image_title);
             progressBar = (ProgressBar) rootView.findViewById(R.id.image_progressbar);
-            title.setText(new File(filePath).getName());
-            title.setSelected(true);
 
             ImageLoadTask task = new ImageLoadTask();
             task.execute();

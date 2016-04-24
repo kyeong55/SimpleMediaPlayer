@@ -1,14 +1,28 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="com.example.taegyeong.simplemediaplayer.ImagePlayActivity">
+    tools:context="com.example.taegyeong.simplemediaplayer.ImagePlayActivity"
+    android:orientation="vertical">
+    <TextView
+        android:id="@+id/image_title"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:padding="14dp"
+        android:singleLine="true"
+        android:ellipsize="end"
+        android:background="@color/colorTheme1"
+        android:textColor="@color/colorBlack"
+        android:textStyle="bold"
+        android:textSize="20sp"
+        android:elevation="4dp"/>
     <android.support.v4.view.ViewPager
         android:id="@+id/image_pager"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         app:layout_behavior="@string/appbar_scrolling_view_behavior"></android.support.v4.view.ViewPager>
 
-</RelativeLayout>
+</LinearLayout>

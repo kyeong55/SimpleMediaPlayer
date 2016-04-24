@@ -3,26 +3,13 @@
     android:orientation="vertical" android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/colorBlack">
-    <TextView
-        android:id="@+id/image_title"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:gravity="center_vertical"
-        android:padding="14dp"
-        android:singleLine="true"
-        android:ellipsize="marquee"
-        android:background="@drawable/controller_background"
-        android:textColor="@color/colorTheme4"
-        android:textStyle="bold"
-        android:textSize="18sp"
-        android:elevation="4dp"/>
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent">
         <ProgressBar
             android:id="@+id/image_progressbar"
-            android:layout_width="140dp"
-            android:layout_height="140dp"
+            android:layout_width="100dp"
+            android:layout_height="100dp"
             android:layout_centerHorizontal="true"
             android:layout_centerVertical="true"
             android:indeterminate="true"
