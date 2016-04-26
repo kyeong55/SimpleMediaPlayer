@@ -32,7 +32,6 @@ public class MusicPlayService extends Service {
         fileList = intent.getStringArrayListExtra("fileList");
         position = intent.getIntExtra("position", -1);
         musicInit(fileList.get(position));
-        
         return START_STICKY;
     }
 

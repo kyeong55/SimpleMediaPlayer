@@ -22,6 +22,7 @@ import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -152,28 +153,62 @@ public class MusicPlayActivity extends AppCompatActivity {
             }
         });
 
-    }
-
-    @Override
-    protected void onStart() {
-        super.onStart();
         musicPlayIntent = new Intent(this, MusicPlayService.class);
         musicPlayIntent.putExtra("fileList", getIntent().getStringArrayListExtra("fileList"));
         musicPlayIntent.putExtra("position", getIntent().getIntExtra("position", -1));
         startService(musicPlayIntent);
         bindService(musicPlayIntent, musicConnection, Context.BIND_AUTO_CREATE);
         isPlaying = true;
+        Log.d("debugging","MusicActivity - onCreated");
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        Log.d("debugging","MusicActivity - onStart");
+//        musicPlayIntent = new Intent(this, MusicPlayService.class);
+//        musicPlayIntent.putExtra("fileList", getIntent().getStringArrayListExtra("fileList"));
+//        musicPlayIntent.putExtra("position", getIntent().getIntExtra("position", -1));
+//        startService(musicPlayIntent);
+//        bindService(musicPlayIntent, musicConnection, Context.BIND_AUTO_CREATE);
+//        isPlaying = true;
     }
 
     @Override
     protected void onStop() {
+        Log.d("debugging","MusicActivity - onStop");
+        super.onStop();
+    }
+
+    @Override
+    protected void onDestroy(){
+        Log.d("debugging","MusicActivity - onDestroy");
         musicPlayService.independent();
         if(!isPlaying) {
             stopService(musicPlayIntent);
         }
         unbindService(musicConnection);
         isPlaying = false;
-        super.onStop();
+        super.onDestroy();
+    }
+
+    @Override
+    protected void onResume(){
+        super.onResume();
+        Log.d("debugging","MusicActivity - onResume");
+    }
+
+    @Override
+    protected void onPause(){
+        Log.d("debugging","MusicActivity - onPause");
+        super.onPause();
+    }
+
+    @Override
+    protected void onRestart(){
+        super.onRestart();
+        Log.d("debugging","MusicActivity - onRestart");
+        new SeekBarThread().start();
     }
 
     @Override
