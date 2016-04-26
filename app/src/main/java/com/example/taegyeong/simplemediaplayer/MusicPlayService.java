@@ -32,6 +32,7 @@ public class MusicPlayService extends Service {
         fileList = intent.getStringArrayListExtra("fileList");
         position = intent.getIntExtra("position", -1);
         musicInit(fileList.get(position));
+        
         return START_STICKY;
     }
 
@@ -43,6 +44,8 @@ public class MusicPlayService extends Service {
     @Override
     public void onDestroy(){
         mediaPlayer.pause();
+        mediaPlayer.release();
+        Log.d("debugging", "media released");
         super.onDestroy();
     }
 
@@ -135,12 +138,6 @@ public class MusicPlayService extends Service {
         }
         Log.d("debugging", "position after: "+position);
     }
-    public boolean isChanged(){
-        return fileChanged;
-    }
-    public void notifiedChange(){
-        fileChanged = false;
-    }
 
     public void seekTo(int time){
         Log.d("debugging", "seekto: "+time+"/ total:"+mediaPlayer.getDuration());
@@ -151,9 +148,6 @@ public class MusicPlayService extends Service {
     }
     public int getCurrentPosition(){
         return mediaPlayer.getCurrentPosition();
-    }
-    public String getFilePath(){
-        return filePath;
     }
 
     public void independent(){

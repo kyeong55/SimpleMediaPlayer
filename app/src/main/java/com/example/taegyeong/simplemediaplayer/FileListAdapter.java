@@ -25,17 +25,6 @@ import java.io.InputStream;
  * Created by taegyeong on 16. 4. 8..
  */
 
-class LoadAlbumClass{
-    int albumID;
-    ImageView icon;
-    ImageView album;
-    LoadAlbumClass (int albumID, ImageView icon, ImageView album){
-        this.albumID = albumID;
-        this.icon = icon;
-        this.album = album;
-    }
-}
-
 public class FileListAdapter extends  RecyclerView.Adapter<FileListAdapter.ViewHolder> {
 
     private final int VIEW_TYPE_EMPTY = 0;
